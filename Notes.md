@@ -88,3 +88,52 @@
 
   1. CREATE src/app/<service name>.service.spec.ts   // test file
   2. CREATE src/app/<service name>.service.ts        // service
+
+## Module, Components, & Services Structure
+
+- This is an overview (and work in progress) of the structure for this site, starting at the default AppModule module:
+
+[AppModule]
+  |
+  ├── AppComponent
+  |   |
+  |   ├── NavComponent
+  |   |
+  |   ├── DrugInteractionsComponent
+  |   |
+  |   ├── AboutComponent
+  |   |
+  |   ├── ContactComponent
+  |   |
+  |   ├── PrivacyPolicyComponent
+  |   |
+  |   └── TermsAndConditionsComponent
+  |
+  ├── NIHInteractionService
+  |   
+  └── NIHListService
+
+## SVG's
+
+- To include svg tags so that you can manipulate & animate them, there are several approaches. 
+
+- Components: you could create an individual component for each svg that you want to include in your view, and then embed that svg component within a host component in a parent/child relationship. 
+
+- SVG Sprite Sheets: you could also create a "dumb" component that will act as a placeholder that can optionally display whichever svg you choose, where an svg is selected from a master svg template. This helps organize multiple svg's into one location, similar to a "sprite sheet".
+
+  > With this approach, you can use the svg <use> tag to "clone" svg elements. 
+
+  > Specifically, you define all of your individual svg's within a single parent <svg> tag, and delineate individual svg's by enclosing each one within <symbol> tags. You would then hide all of these individual svg's by assigning a "display: none" style (or something similar) to the parent <svg> tag. The resulting file constitutes the "sprite sheet". 
+  
+  > Afterwards you could then select and use an individual svg from this "sprite sheet" in a template by referencing it directly using a combination of the <use> tag and the svg's CSS id selector
+
+  > In some cases, since svg's don't have HTML attributes in the traditional sense you have to use attribute-binding syntax, ie. attr.xlink:href (I forget which cases, need to refer back to this later).
+
+  1. https://itnext.io/easy-way-to-organize-your-icons-using-svgs-in-angular-5-f35333d0b442
+  2. https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
+  3. https://stackoverflow.com/questions/35082657/angular2-svg-xlinkhref1
+  4. https://css-tricks.com/svg-sprites-use-better-icon-fonts/
+
+- Raw Loader: you could also use a custom Webpack build process that utilizes a "raw-loader".
+
+  1. https://stackoverflow.com/questions/55724730/how-to-link-to-a-local-svg-file-in-the-angular-app
