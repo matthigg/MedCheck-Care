@@ -94,23 +94,25 @@
 - This is an overview (and work in progress) of the structure for this site, starting at the default AppModule module:
 
 [AppModule]
-  |
+  │
   ├── AppComponent
-  |   |
-  |   ├── NavComponent
-  |   |
-  |   ├── DrugInteractionsComponent
-  |   |
-  |   ├── AboutComponent
-  |   |
-  |   ├── ContactComponent
-  |   |
-  |   ├── PrivacyPolicyComponent
-  |   |
-  |   └── TermsAndConditionsComponent
-  |
+  │   │
+  │   ├── SvgSpriteSheetComponent
+  │   │
+  │   ├── NavComponent
+  │   │
+  │   ├── DrugInteractionsComponent
+  │   │
+  │   ├── AboutComponent
+  │   │
+  │   ├── ContactComponent
+  │   │
+  │   ├── PrivacyPolicyComponent
+  │   │
+  │   └── TermsAndConditionsComponent
+  │
   ├── NIHInteractionService
-  |   
+  │   
   └── NIHListService
 
 ## SVG's
@@ -137,3 +139,21 @@
 - Raw Loader: you could also use a custom Webpack build process that utilizes a "raw-loader".
 
   1. https://stackoverflow.com/questions/55724730/how-to-link-to-a-local-svg-file-in-the-angular-app
+
+## Bootstrap 4
+
+- The issue with using Bootstrap 4 with Angular 8 is that Bootstrap relies on JavaScript and jQuery for some of its animations. Using Angular alongside jQuery is generally thought to be a bad idea, because they both control elements within the DOM through completely separate mechanisms, and this can cause clashes and other unexpected bugs.
+
+- One popular Angular-powered Bootstrap library is called "ng-bootstrap", which is written entirely in CSS and does not include any JavaScript or jQuery. It mimicks Bootstrap functionality by using various Angular directives from the ng-bootstrap library, which usually involve property- and event-binding. The downside is that you sometimes have to write custom CSS to mimick certain functionality that is missing from the ng-bootstrap directives, things that Bootstrap JavaScript/Popper/jQuery would normally handle. For example, the ng-bootstrap ngbCollapse directive does not support smooth navbar collapse animations.
+
+- Another option is "ngx-bootstrap", which is basically the same thing as "ng-bootstrap" except that it features animations for some of its components and also supports Bootstrap v3 and v4, as opposed to just v4. 
+
+  1. https://ng-bootstrap.github.io/#/getting-started
+  2. https://www.techiediaries.com/angular-bootstrap-ui/
+  3. https://stevenschwenke.de/AngularAndBootstrapUseNg-bootstrap
+
+## Angular Material Design
+
+- Angular Material Design is definitely an option to consider because it does not rely on jQuery, but it can still offer navbar expanding/collapsing animations. With Bootstrap, you either have to give in an install jQuery (which opens up opportunities for bugs and also adds a lot of bloat to your program) or go without jQuery and re-write any functionality that it would have provided. Angular material design, on the other hand, was written by Google specifically for Angular (which was also written by Google), and Material Design 
+
+  1. https://material.angular.io/
