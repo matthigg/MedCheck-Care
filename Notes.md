@@ -152,13 +152,14 @@
 
 - The issue with using Bootstrap 4 with Angular 8 is that Bootstrap relies on JavaScript and jQuery for some of its animations. Using Angular alongside jQuery is generally thought to be a bad idea, because they both control elements within the DOM through completely separate mechanisms, and this can cause clashes and other unexpected bugs.
 
-- One popular Angular-powered Bootstrap library is called "ng-bootstrap", which is written entirely in CSS and does not include any JavaScript or jQuery. It mimicks Bootstrap functionality by using various Angular directives from the ng-bootstrap library, which usually involve property- and event-binding. The downside is that you sometimes have to write custom CSS to mimick certain functionality that is missing from the ng-bootstrap directives, things that Bootstrap JavaScript/Popper/jQuery would normally handle. For example, the ng-bootstrap ngbCollapse directive does not support smooth navbar collapse animations.
+- One popular Angular-powered Bootstrap library is called "ng-bootstrap", which is written entirely in CSS and does not include any JavaScript or jQuery. It mimicks Bootstrap functionality by using various Angular directives from the ng-bootstrap library, which usually involve property- and event-binding. The downside is that you sometimes have to write custom CSS or methods to mimick certain functionality that is missing from the ng-bootstrap directives, things that Bootstrap JavaScript/Popper/jQuery would normally handle. For example, the ng-bootstrap ngbCollapse directive does not support smooth navbar collapse animations.
 
 - Another option is "ngx-bootstrap", which is basically the same thing as "ng-bootstrap" except that it features animations for some of its components and also supports Bootstrap v3 and v4, as opposed to just v4. 
 
   1. https://ng-bootstrap.github.io/#/getting-started
   2. https://www.techiediaries.com/angular-bootstrap-ui/
   3. https://stevenschwenke.de/AngularAndBootstrapUseNg-bootstrap
+  4. https://medium.com/@tiboprea/build-a-responsive-bootstrap-4-navbar-in-angular-5-without-jquery-c59ad35b007
 
 ## Angular Material Design
 
