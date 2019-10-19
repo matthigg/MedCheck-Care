@@ -15,6 +15,14 @@
 - Angular 8.2.10
 - ng (Angular CLI) 8.3.8
 
+- To verify installation:
+
+  $ node --version
+  $ nvm --version
+  $ npm --version
+  $ tsc --version
+  $ ng --version
+
 ## Setup & Local Development
 
 - To create a new Angular workspace:
@@ -94,23 +102,25 @@
 - This is an overview (and work in progress) of the structure for this site, starting at the default AppModule module:
 
 [AppModule]
-  |
+  │
   ├── AppComponent
-  |   |
-  |   ├── NavComponent
-  |   |
-  |   ├── DrugInteractionsComponent
-  |   |
-  |   ├── AboutComponent
-  |   |
-  |   ├── ContactComponent
-  |   |
-  |   ├── PrivacyPolicyComponent
-  |   |
-  |   └── TermsAndConditionsComponent
-  |
+  │   │
+  │   ├── SvgSpriteSheetComponent
+  │   │
+  │   ├── NavComponent
+  │   │
+  │   ├── DrugInteractionsComponent
+  │   │
+  │   ├── AboutComponent
+  │   │
+  │   ├── ContactComponent
+  │   │
+  │   ├── PrivacyPolicyComponent
+  │   │
+  │   └── TermsAndConditionsComponent
+  │
   ├── NIHInteractionService
-  |   
+  │   
   └── NIHListService
 
 ## SVG's
@@ -137,3 +147,42 @@
 - Raw Loader: you could also use a custom Webpack build process that utilizes a "raw-loader".
 
   1. https://stackoverflow.com/questions/55724730/how-to-link-to-a-local-svg-file-in-the-angular-app
+
+## Bootstrap 4
+
+- The issue with using Bootstrap 4 with Angular 8 is that Bootstrap relies on JavaScript and jQuery for some of its animations. Using Angular alongside jQuery is generally thought to be a bad idea, because they both control elements within the DOM through completely separate mechanisms, and this can cause clashes and other unexpected bugs.
+
+- One popular Angular-powered Bootstrap library is called "ng-bootstrap", which is written entirely in CSS and does not include any JavaScript or jQuery. It mimicks Bootstrap functionality by using various Angular directives from the ng-bootstrap library, which usually involve property- and event-binding. The downside is that you sometimes have to write custom CSS or methods to mimick certain functionality that is missing from the ng-bootstrap directives, things that Bootstrap JavaScript/Popper/jQuery would normally handle. For example, the ng-bootstrap ngbCollapse directive does not support smooth navbar collapse animations.
+
+- Another option is "ngx-bootstrap", which is basically the same thing as "ng-bootstrap" except that it features animations for some of its components and also supports Bootstrap v3 and v4, as opposed to just v4. 
+
+  1. https://ng-bootstrap.github.io/#/getting-started
+  2. https://www.techiediaries.com/angular-bootstrap-ui/
+  3. https://stevenschwenke.de/AngularAndBootstrapUseNg-bootstrap
+  4. https://medium.com/@tiboprea/build-a-responsive-bootstrap-4-navbar-in-angular-5-without-jquery-c59ad35b007
+
+## Angular Material Design
+
+- Angular Material Design is definitely an option to consider because it does not rely on jQuery, but it can still offer navbar expanding/collapsing animations. With Bootstrap, you either have to give in an install jQuery (which opens up opportunities for bugs and also adds a lot of bloat to your program) or go without jQuery and re-write any functionality that it would have provided. Angular material design, on the other hand, was written by Google specifically for Angular (which was also written by Google), and Material Design.
+
+- Installation - you can select a pre-built or custom "theme" for the entire application, you can choose to install HammerJS for "gesture recognition" which is required by some components, ie. mat-slider, and you can choose the BrowserAnimationsModule which enables Angular's animation system. To install using the Angular CLI:
+
+  $ ng add @angular/cdk
+  $ ng add @angular/material
+
+  ... if you selected a theme during installation, you have to then import that theme in the ~/src/styles.scss file or reference it directly using an HTML <link> tag (from, I guess, within the ~/src/index.html template). 
+
+    1. https://material.angular.io/guide/theming#using-a-pre-built-theme
+
+  ... to verify installation:
+
+  $ npm list @angular/cdk
+  $ npm list @angular/material
+  $ npm list hammerjs (responsible for "gesture recognition")
+
+- Troubleshooting
+
+  > Installation - Error: EACCES: permission denied, rename... (10/19/2019): You can install "Angular CLI's install schematic" to set up an Angular Material project using the `ng add` command -- this installs both Angular Material and the Component Dev Kit (CDK) in ~/node_modules/material and ~/node_modules/cdk, respectively. However, if you don't install the CDK first then you'll run into a permissions error, as part of the installation process involves renaming/doing something with a file located in ~/node_modules/cdk. So to avoid this, just install the CDK first.
+
+  1. https://material.angular.io/guide/getting-started
+  2. https://material.angular.io/guide/schematics
