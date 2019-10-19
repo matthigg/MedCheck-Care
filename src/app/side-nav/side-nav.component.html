@@ -1,27 +1,43 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport
-      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-      [mode]="(isHandset$ | async) ? 'over' : 'side'"
-      [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
+
+  <!-- Sidenav/Drawer Component -->
+  <mat-sidenav 
+    #drawer
+    class="sidenav" 
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+  >
+    <mat-toolbar>
+      <svg class="logo-svg"><use xlink:href="#logo" /></svg> 
+      <span class="logo-text">MedCheck.care</span>
+    </mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item href="#">Link 1</a>
-      <a mat-list-item href="#">Link 2</a>
-      <a mat-list-item href="#">Link 3</a>
+      <a mat-list-item href="#">Drug Interactions</a>
+      <a mat-list-item href="#">About</a>
+      <a mat-list-item href="#">Contact</a>
     </mat-nav-list>
   </mat-sidenav>
-  <mat-sidenav-content>
+
+  <!-- Main Content -->
+  <mat-sidenav-content role="main">
     <mat-toolbar color="primary">
       <button
         type="button"
         aria-label="Toggle sidenav"
         mat-icon-button
         (click)="drawer.toggle()"
-        *ngIf="isHandset$ | async">
+        *ngIf="isHandset$ | async"
+      >
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>MedCheck-Care</span>
+      <span>Drug Interactions</span>
     </mat-toolbar>
-    <!-- Add Content Here -->
+
+    <!-- Add Main Content Here -->
+    <span>Main Content</span>
+
   </mat-sidenav-content>
+
 </mat-sidenav-container>
