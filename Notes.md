@@ -15,6 +15,14 @@
 - Angular 8.2.10
 - ng (Angular CLI) 8.3.8
 
+- To verify installation:
+
+  $ node --version
+  $ nvm --version
+  $ npm --version
+  $ tsc --version
+  $ ng --version
+
 ## Setup & Local Development
 
 - To create a new Angular workspace:
@@ -154,6 +162,26 @@
 
 ## Angular Material Design
 
-- Angular Material Design is definitely an option to consider because it does not rely on jQuery, but it can still offer navbar expanding/collapsing animations. With Bootstrap, you either have to give in an install jQuery (which opens up opportunities for bugs and also adds a lot of bloat to your program) or go without jQuery and re-write any functionality that it would have provided. Angular material design, on the other hand, was written by Google specifically for Angular (which was also written by Google), and Material Design 
+- Angular Material Design is definitely an option to consider because it does not rely on jQuery, but it can still offer navbar expanding/collapsing animations. With Bootstrap, you either have to give in an install jQuery (which opens up opportunities for bugs and also adds a lot of bloat to your program) or go without jQuery and re-write any functionality that it would have provided. Angular material design, on the other hand, was written by Google specifically for Angular (which was also written by Google), and Material Design.
 
-  1. https://material.angular.io/
+- Installation - you can select a pre-built or custom "theme" for the entire application, you can choose to install HammerJS for "gesture recognition" which is required by some components, ie. mat-slider, and you can choose the BrowserAnimationsModule which enables Angular's animation system. To install using the Angular CLI:
+
+  $ ng add @angular/cdk
+  $ ng add @angular/material
+
+  ... if you selected a theme during installation, you have to then import that theme in the ~/src/styles.scss file or reference it directly using an HTML <link> tag (from, I guess, within the ~/src/index.html template). 
+
+    1. https://material.angular.io/guide/theming#using-a-pre-built-theme
+
+  ... to verify installation:
+
+  $ npm list @angular/cdk
+  $ npm list @angular/material
+  $ npm list hammerjs (responsible for "gesture recognition")
+
+- Troubleshooting
+
+  > Installation - Error: EACCES: permission denied, rename... (10/19/2019): You can install "Angular CLI's install schematic" to set up an Angular Material project using the `ng add` command -- this installs both Angular Material and the Component Dev Kit (CDK) in ~/node_modules/material and ~/node_modules/cdk, respectively. However, if you don't install the CDK first then you'll run into a permissions error, as part of the installation process involves renaming/doing something with a file located in ~/node_modules/cdk. So to avoid this, just install the CDK first.
+
+  1. https://material.angular.io/guide/getting-started
+  2. https://material.angular.io/guide/schematics
