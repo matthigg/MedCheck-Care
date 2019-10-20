@@ -105,6 +105,8 @@
   │
   ├── AppComponent
   │   │
+  │   ├── AppRoutingModule
+  │   │
   │   ├── SvgSpriteSheetComponent
   │   │
   │   ├── NavComponent
@@ -122,6 +124,25 @@
   ├── NIHInteractionService
   │   
   └── NIHListService
+
+## Routes
+
+- Assuming that the workspace was set up to include the (optional) Angular Routing Module, the ~/src/app/app-routing.module.ts file was created and the routing module was imported and included in the imports[] array in AppModule, ie. ~/src/app/app.module.ts.
+
+- To set up a route that leads to view:
+
+-- ~/src/app/app-routing.module.ts
+
+  ...
+  import { <component name> } from './path/to/component';
+  ...
+  const routes: Routes = [
+    { path: '<url route>', component: <component name> }
+  ]
+
+  ... note: this is pretty similar to adding routes to the urlpatterns[] list in any urls.py file in Django.
+
+  1. https://angular.io/tutorial/toh-pt5
 
 ## SVG's
 

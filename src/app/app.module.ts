@@ -4,7 +4,6 @@ import { MatSliderModule } from '@angular/material/slider';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NavComponent } from './nav/nav.component';
 import { AboutComponent } from './about/about.component';
 import { SvgSpriteSheetComponent } from './svg-sprite-sheet/svg-sprite-sheet.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,14 +14,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { DrugInteractionsComponent } from './drug-interactions/drug-interactions.component';
+import { ContactComponent } from './contact/contact.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavComponent,
     AboutComponent,
     SvgSpriteSheetComponent,
-    SideNavComponent
+    SideNavComponent,
+    DrugInteractionsComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,
