@@ -10,6 +10,7 @@ $logo-size: calc(1rem + 1vw);
     width: 300px;
     & .mat-toolbar {          // Sidenav/Drawer Component Header  
       background: inherit;
+      justify-content: center;
       & .logo-svg {
         height: $logo-size;
         width: $logo-size;

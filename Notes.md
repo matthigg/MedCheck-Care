@@ -109,18 +109,17 @@
   │   │
   │   ├── SvgSpriteSheetComponent
   │   │
-  │   ├── SideNavComponent
-
-  │   │
-  │   ├── DrugInteractionsComponent
-  │   │
-  │   ├── AboutComponent
-  │   │
-  │   ├── ContactComponent
-  │   │
-  │   ├── PrivacyPolicyComponent
-  │   │
-  │   └── TermsAndConditionsComponent
+  │   └── SideNavComponent
+  │       │
+  │       ├── DrugInteractionsComponent
+  │       │
+  │       ├── AboutComponent
+  │       │
+  │       ├── ContactComponent
+  │       │
+  │       ├── PrivacyPolicyComponent
+  │       │
+  │       └── TermsAndConditionsComponent
   │
   ├── NIHInteractionService
   │   
