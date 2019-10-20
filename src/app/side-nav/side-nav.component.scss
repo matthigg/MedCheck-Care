@@ -1,0 +1,36 @@
+
+@import '../../colors';
+
+$logo-size: calc(1rem + 1vw);
+
+.mat-sidenav-container {
+  height: 100%;
+  & .mat-sidenav {            // Sidenav/Drawer Component
+    min-width: min-content;
+    width: 300px;
+    & .mat-toolbar {          // Sidenav/Drawer Component Header  
+      background: inherit;
+      & .logo-svg {
+        height: $logo-size;
+        width: $logo-size;
+        & #logo {
+          height: 100%;
+          width: 100%;
+        }
+      }
+      & .logo-text {
+        color: $primary-color;
+        font-size: $logo-size;
+        font-weight: 100;
+        margin-left: calc(0.25rem + 0.25vw);
+      }
+    }
+  }
+  & .mat-sidenav-content {    // Main Content
+    & .mat-toolbar {          // Main Content Header
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  }
+}

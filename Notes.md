@@ -123,6 +123,25 @@
   │   
   └── NIHListService
 
+## Routes
+
+- Assuming that the workspace was set up to include the (optional) Angular Routing Module, the ~/src/app/app-routing.module.ts file was created and the routing module was imported and included in the imports[] array in AppModule, ie. ~/src/app/app.module.ts.
+
+- To set up a route that leads to view:
+
+-- ~/src/app/app-routing.module.ts
+
+  ...
+  import { <component name> } from './path/to/component';
+  ...
+  const routes: Routes = [
+    { path: '<url route>', component: <component name> }
+  ]
+
+  ... note: this is pretty similar to adding routes to the urlpatterns[] list in any urls.py file in Django.
+
+  1. https://angular.io/tutorial/toh-pt5
+
 ## SVG's
 
 - To include svg tags so that you can manipulate & animate them, there are several approaches. 
@@ -150,20 +169,24 @@
 
 ## Bootstrap 4
 
-- The issue with using Bootstrap 4 with Angular 8 is that Bootstrap relies on JavaScript and jQuery for some of its animations. Using Angular alongside jQuery is generally thought to be a bad idea, because they both control elements within the DOM through completely separate mechanisms, and this can cause clashes and other unexpected bugs.
+- When using a front-end framework like Angular, it's generally a good idea to let that framework have total responsibility when it comes to controlling the front-end. The issue with using Bootstrap 4 with Angular 8 is that Bootstrap relies on JavaScript and jQuery for some of its animations. Using Angular alongside jQuery is generally thought to be a bad idea, because they both control elements within the DOM through completely separate mechanisms, and this can cause clashes and other unexpected bugs.
 
 - One popular Angular-powered Bootstrap library is called "ng-bootstrap", which is written entirely in CSS and does not include any JavaScript or jQuery. It mimicks Bootstrap functionality by using various Angular directives from the ng-bootstrap library, which usually involve property- and event-binding. The downside is that you sometimes have to write custom CSS or methods to mimick certain functionality that is missing from the ng-bootstrap directives, things that Bootstrap JavaScript/Popper/jQuery would normally handle. For example, the ng-bootstrap ngbCollapse directive does not support smooth navbar collapse animations.
 
-- Another option is "ngx-bootstrap", which is basically the same thing as "ng-bootstrap" except that it features animations for some of its components and also supports Bootstrap v3 and v4, as opposed to just v4. 
+- Another option is "ngx-bootstrap", which is basically the same thing as "ng-bootstrap" except that it features animations for some of its components and also supports Bootstrap v3 and v4, as opposed to just v4.
 
   1. https://ng-bootstrap.github.io/#/getting-started
   2. https://www.techiediaries.com/angular-bootstrap-ui/
   3. https://stevenschwenke.de/AngularAndBootstrapUseNg-bootstrap
   4. https://medium.com/@tiboprea/build-a-responsive-bootstrap-4-navbar-in-angular-5-without-jquery-c59ad35b007
 
-## Angular Material Design
+## Angular Material
 
-- Angular Material Design is definitely an option to consider because it does not rely on jQuery, but it can still offer navbar expanding/collapsing animations. With Bootstrap, you either have to give in an install jQuery (which opens up opportunities for bugs and also adds a lot of bloat to your program) or go without jQuery and re-write any functionality that it would have provided. Angular material design, on the other hand, was written by Google specifically for Angular (which was also written by Google), and Material Design.
+- Angular Material is definitely an option to consider because it does not rely on jQuery -and- it still offers navbar expanding/collapsing animations (albeit through a side navbar). With Bootstrap, you either have to install jQuery (which opens up opportunities for bugs and also adds a lot of bloat to your program) or go without jQuery and re-write the missing functionality.
+
+- Another consideration is that Angular Material was written by Google specifically for Angular, which was also written by Google, so support is likely to continue to be pretty good.
+
+- The downside to Angular Material is that it doesn't control the overall layout of a webpage like Bootstrap's flexbox and grid system. This may be due to the fact that Angular Material was not originally written with a "mobile-first" focus in mind. However, there is another library called Angular Flex Layout which fills in this gap, and is typically used in conjunction with Angular Material.
 
 - Installation - you can select a pre-built or custom "theme" for the entire application, you can choose to install HammerJS for "gesture recognition" which is required by some components, ie. mat-slider, and you can choose the BrowserAnimationsModule which enables Angular's animation system. To install using the Angular CLI:
 
@@ -186,3 +209,4 @@
 
   1. https://material.angular.io/guide/getting-started
   2. https://material.angular.io/guide/schematics
+  3. https://codinglatte.com/posts/angular/angular-flex-better-than-bootstrap/
