@@ -109,7 +109,8 @@
   │   │
   │   ├── SvgSpriteSheetComponent
   │   │
-  │   ├── NavComponent
+  │   ├── SideNavComponent
+
   │   │
   │   ├── DrugInteractionsComponent
   │   │
