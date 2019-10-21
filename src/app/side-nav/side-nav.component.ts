@@ -26,6 +26,12 @@ export class SideNavComponent {
   handsetScreenActive: boolean
   handsetSubscription: Subscription
 
+  // This variable holds the title that is emitted from whichever child component
+  // view is currently rendered at the location of <router-outlet> in the
+  // ~/src/app/side-nav/side-nav.component.html template.
+  pageTitle: string
+  pageTitleSubscription: Subscription
+
   constructor(private breakpointObserver: BreakpointObserver) {
   }
 
@@ -40,6 +46,19 @@ export class SideNavComponent {
   // a memory leak.
   ngOnDestroy() {
     this.handsetSubscription.unsubscribe()
+  }
+
+  // This function is triggered by <router-outlet>'s (activate) event, which
+  // occurs whenever a component is rendered via the AppRoutingModule.
+  componentAdded(component): void {
+    this.pageTitleSubscription = component.pageTitle.subscribe(title => this.pageTitle = title)
+  }
+
+  // This function is triggered by <router-outlet>'s (deactivate) event, which
+  // occurs whenever a component that was rendered via the AppRoutingModule is
+  // destroyed.
+  componentRemoved(): void {
+    this.pageTitleSubscription.unsubscribe()
   }
 
 }

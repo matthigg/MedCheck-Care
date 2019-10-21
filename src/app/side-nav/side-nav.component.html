@@ -38,11 +38,11 @@
       >
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>Drug Interactions</span><br>
+      <span>{{ pageTitle }}</span>
     </mat-toolbar>
 
     <!-- Add Main Content Here -->
-    <router-outlet></router-outlet>
+    <router-outlet (activate)="componentAdded($event)" (deactivate)="componentRemoved()"></router-outlet>
 
   </mat-sidenav-content>
 </mat-sidenav-container>
