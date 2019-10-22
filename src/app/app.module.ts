@@ -1,42 +1,43 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-import { MatSliderModule } from '@angular/material/slider';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
-import { SvgSpriteSheetComponent } from './svg-sprite-sheet/svg-sprite-sheet.component';
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SideNavComponent } from './side-nav/side-nav.component';
+import { ContactComponent } from './contact/contact.component';
+import { DrugInteractionsComponent } from './drug-interactions/drug-interactions.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { DrugInteractionsComponent } from './drug-interactions/drug-interactions.component';
-import { ContactComponent } from './contact/contact.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { SideNavComponent } from './side-nav/side-nav.component';
+import { SvgSpriteSheetComponent } from './svg-sprite-sheet/svg-sprite-sheet.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
     AboutComponent,
-    SvgSpriteSheetComponent,
-    SideNavComponent,
+    AppComponent,
+    ContactComponent,
     DrugInteractionsComponent,
-    ContactComponent
+    SideNavComponent,
+    SvgSpriteSheetComponent,
   ],
   imports: [
-    BrowserModule,
     AppRoutingModule,
-    MatSliderModule,
     BrowserAnimationsModule,
+    BrowserModule,
+    FormsModule,
     LayoutModule,
-    MatToolbarModule,
     MatButtonModule,
-    MatSidenavModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
