@@ -17,7 +17,6 @@ export class DrugInteractionsComponent implements OnInit {
   // Declare a form group that will include 2 or more form controls, ie.
   // medication input fields.
   medGroup: FormGroup;
-  medArray: FormArray;
 
   constructor(private formBuilder: FormBuilder) { }
 
