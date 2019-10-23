@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-drug-interactions',
@@ -8,12 +8,30 @@ import { FormControl } from '@angular/forms';
 })
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
-  inputControl = new FormControl('');
 
-  constructor() { }
+  // Initialize two drug-drug interaction fields
+  medFormFields = { med1: [''], med2: [''] }
+  medGroup: FormGroup
+
+  constructor(private formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    this.medFormBuild();
     this.emitPageTitle();
+  }
+
+  // Add a medication field
+  medFormAddField() {
+    let numMeds: number = Object.keys(this.medFormFields).length;
+    this.medFormFields['med' + ++numMeds] = [''];
+    this.medFormBuild()
+  }
+
+  // Build the form -- currently there is an initial build when the component
+  // loads/initializes, and subsequent builds if a user requests more medication
+  // fields
+  medFormBuild() {
+    this.medGroup = this.formBuilder.group(this.medFormFields)
   }
 
   // Since the title/header for each view in this website is embedded in the 
@@ -21,6 +39,10 @@ export class DrugInteractionsComponent implements OnInit {
   // child --> parent data flow.
   emitPageTitle(): void {
     this.pageTitle.emit('Drug Interactions');
+  }
+
+  onSubmit() {
+    console.log('submit')
   }
 
 }
