@@ -26,11 +26,13 @@
       herbal supplements that you want to check for interactions.
     </p>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
-      <label *ngFor="let field of medFormFields | keyvalue">
-        <input id="{{ field.key }}" type="text" formControlName="{{ field.key }}">
-        <button class="btn-delete" type="button" (click)="medFormDeleteField(field)">x</button>
-      </label>
-      <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Medication</button>
+      <div formArrayName="meds">
+        <label *ngFor="let field of meds.controls; let i=index">
+          <input type="text" [formControlName]="i">
+          <button class="btn-delete" type="button" (click)="medFormDeleteField(i)">x</button>
+        </label>
+        <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Medication</button>
+      </div>
     </form>
   </div>
 
