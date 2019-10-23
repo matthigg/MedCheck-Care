@@ -25,20 +25,21 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   // Add a medication input field.
+  medInputFieldIndex: number = Object.keys(this.medFormFields).length + 1;
   medFormAddField() {
 
     // Generate a name for the new medication input field.
-    const newFieldName = 'med' + ++Object.keys(this.medFormFields).length
+    const newFieldName = 'med' + this.medInputFieldIndex++;
 
     // Save the form group input values so that they can later be re-inserted 
     // into the form via the setValue() method.
-    const medGroupValue = this.medGroup.value
+    const medGroupValue = this.medGroup.value;
     medGroupValue[newFieldName] = '';
 
     // Add a new medication input field to the form model, then rebuild the form
     // to reflect the change.
     this.medFormFields[newFieldName] = [''];
-    this.medFormBuild()
+    this.medFormBuild();
     
     // Re-insert any medication input field values that a user may have typed 
     // before adding a new medication field
