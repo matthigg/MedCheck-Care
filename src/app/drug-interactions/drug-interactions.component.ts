@@ -15,7 +15,7 @@ export class DrugInteractionsComponent implements OnInit {
 
   // Declare a form group that will include 2 or more form controls, ie.
   // medication input fields.
-  medGroup: FormGroup
+  medGroup: FormGroup;
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -42,15 +42,20 @@ export class DrugInteractionsComponent implements OnInit {
     this.medFormBuild();
     
     // Re-insert any medication input field values that a user may have typed 
-    // before adding a new medication field
-    this.medGroup.setValue(medGroupValue)
+    // before adding a new medication input field.
+    this.medGroup.setValue(medGroupValue);
+  }
+
+  // Delete a medication input field.
+  medFormDeleteField(field) {
+    delete this.medFormFields[field.key]
   }
 
   // Build the form -- currently there is an initial build when the component
   // loads/initializes, and subsequent builds if a user requests more medication
-  // fields
+  // fields.
   medFormBuild() {
-    this.medGroup = this.formBuilder.group(this.medFormFields)
+    this.medGroup = this.formBuilder.group(this.medFormFields);
   }
 
   // Since the title/header for each view in this website is embedded in the 
@@ -61,7 +66,7 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('this.medGroup:', this.medGroup.value)
+    console.log('this.medGroup:', this.medGroup.value);
   }
 
 }

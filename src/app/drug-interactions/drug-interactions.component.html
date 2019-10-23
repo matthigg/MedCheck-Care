@@ -28,8 +28,9 @@
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <label *ngFor="let field of medFormFields | keyvalue">
         <input id="{{ field.key }}" type="text" formControlName="{{ field.key }}">
+        <button class="btn-delete" type="button" (click)="medFormDeleteField(field)">x</button>
       </label>
-      <button type="button" (click)="medFormAddField()">+Add Medication</button>
+      <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Medication</button>
     </form>
   </div>
 
