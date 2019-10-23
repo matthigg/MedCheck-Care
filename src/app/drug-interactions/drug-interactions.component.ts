@@ -28,7 +28,7 @@ export class DrugInteractionsComponent implements OnInit {
   medInputFieldIndex: number = Object.keys(this.medFormFields).length + 1;
   medFormAddField() {
 
-    // Generate a name for the new medication input field.
+    // Create a name for the new medication input field.
     const newFieldName = 'med' + this.medInputFieldIndex++;
 
     // Save the form group input values so that they can later be re-inserted 
@@ -48,7 +48,19 @@ export class DrugInteractionsComponent implements OnInit {
 
   // Delete a medication input field.
   medFormDeleteField(field) {
-    delete this.medFormFields[field.key]
+    
+    // Retain any user input data from medication input fields except for the
+    // field that is about to be deleted. 
+    delete this.medGroup.value[field.key];
+    const medGroupValue = this.medGroup.value;
+
+    // Delete the field from the form model and then rebuild the form.
+    delete this.medFormFields[field.key];
+    this.medFormBuild();
+
+    // Re-insert any medication input field values that a user may have typed 
+    // before adding a new medication input field.
+    this.medGroup.setValue(medGroupValue);
   }
 
   // Build the form -- currently there is an initial build when the component
