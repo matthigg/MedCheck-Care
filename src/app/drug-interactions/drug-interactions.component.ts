@@ -9,13 +9,15 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
 
-  // Define the form model, which includes two drug-drug interaction fields. If 
-  // a user later adds more fields to the form, then this model will change.
+  // Define the form model, which includes two drug-drug interaction fields by
+  // default. Users can change this model by adding or removing fields from the 
+  // form.
   medFormFields = { med1: [''], med2: [''] }
 
   // Declare a form group that will include 2 or more form controls, ie.
   // medication input fields.
   medGroup: FormGroup;
+  medArray: FormArray;
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -64,8 +66,8 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   // Build the form -- currently there is an initial build when the component
-  // loads/initializes, and subsequent builds if a user requests more medication
-  // fields.
+  // loads/initializes, and subsequent builds if a user adds or deletes 
+  // medication input fields.
   medFormBuild() {
     this.medGroup = this.formBuilder.group(this.medFormFields);
   }
