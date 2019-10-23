@@ -75,9 +75,9 @@
 }
 
 %steps {
-  text-align: center;
   & h3 {
     color: $primary-color;
+    text-align: center;
   }
 }
 
@@ -86,7 +86,9 @@
   @extend %steps;
   & .btn-add-medication {
     border-radius: calc(0.25rem + 0.25vw);
+    display: block;
     height: calc(1.5rem + 1vw);
+    margin: 0 auto;
     padding: 0 calc(0.5rem + 0.5vw);
     @extend %btn;
     &:hover {
@@ -121,6 +123,14 @@
 .step-2 {
   grid-area: step2;
   @extend %steps;
+  & .btn-view-results {
+    border-radius: calc(0.25rem + 0.25vw);
+    display: block;
+    height: calc(1.5rem + 1vw);
+    margin: 0 auto;
+    padding: 0 calc(0.5rem + 0.5vw);
+    @extend %btn;
+  }
 }
 
 .step-3 {

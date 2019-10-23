@@ -23,7 +23,7 @@
     <h3>Step 1</h3>
     <p>
       Type in the names of prescription medications, OTC medications, and/or
-      herbal supplements to check for interactions
+      herbal supplements that you want to check for interactions.
     </p>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <label *ngFor="let field of medFormFields | keyvalue">
@@ -36,13 +36,13 @@
 
   <div class="step-2">
     <h3>Step 2</h3>
-    <p>Click for results</p>
-    <button type="submit" form="medForm" [disabled]="!medGroup.valid">Submit</button>
+    <p>Click the button below after you have entered all of the medications that you want to check.</p>
+    <button class="btn-view-results" type="submit" form="medForm" [disabled]="!medGroup.valid">Check for Interactions</button>
   </div>
 
   <div class="step-3">
     <h3>Step 3</h3>
-    <p>View results</p>
+    <p>View, print, or save your results to your device. Saved results are in .pdf format.</p>
   </div>
 
 </div>
