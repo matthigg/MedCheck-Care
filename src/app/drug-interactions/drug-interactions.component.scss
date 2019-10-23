@@ -130,6 +130,9 @@
     margin: 0 auto;
     padding: 0 calc(0.5rem + 0.5vw);
     @extend %btn;
+    &:hover {
+      background-color: $secondary-color;
+    }
   }
 }
 
