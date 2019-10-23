@@ -32,6 +32,9 @@ $logo-size: calc(1rem + 1vw);
       position: sticky;
       top: 0;
       z-index: 1;
+      & h1 {
+        margin-left: calc(0.5rem + 0.5vw);
+      }
     }
   }
 }
