@@ -9,8 +9,12 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
 
-  // Initialize two drug-drug interaction fields
+  // Define the form model, which includes two drug-drug interaction fields. If 
+  // a user later adds more fields to the form, then this model will change.
   medFormFields = { med1: [''], med2: [''] }
+
+  // Declare a form group that will include 2 or more form controls, ie.
+  // medication input fields.
   medGroup: FormGroup
 
   constructor(private formBuilder: FormBuilder) { }
@@ -20,11 +24,25 @@ export class DrugInteractionsComponent implements OnInit {
     this.emitPageTitle();
   }
 
-  // Add a medication field
+  // Add a medication input field.
   medFormAddField() {
-    let numMeds: number = Object.keys(this.medFormFields).length;
-    this.medFormFields['med' + ++numMeds] = [''];
+
+    // Generate a name for the new medication input field.
+    const newFieldName = 'med' + ++Object.keys(this.medFormFields).length
+
+    // Save the form group input values so that they can later be re-inserted 
+    // into the form via the setValue() method.
+    const medGroupValue = this.medGroup.value
+    medGroupValue[newFieldName] = '';
+
+    // Add a new medication input field to the form model, then rebuild the form
+    // to reflect the change.
+    this.medFormFields[newFieldName] = [''];
     this.medFormBuild()
+    
+    // Re-insert any medication input field values that a user may have typed 
+    // before adding a new medication field
+    this.medGroup.setValue(medGroupValue)
   }
 
   // Build the form -- currently there is an initial build when the component
@@ -42,7 +60,7 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('submit')
+    console.log('this.medGroup:', this.medGroup.value)
   }
 
 }

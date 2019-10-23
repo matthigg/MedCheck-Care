@@ -62,6 +62,38 @@
 .step-1 {
   grid-area: step1;
   @extend %steps;
+  & button {
+    background-color: $primary-color;
+    border: none;
+    border-radius: calc(0.25rem + 0.25vw);
+    color: white;
+    font-size: calc(1rem + 0.1vw);
+    height: calc(1.5rem + 1vw);
+    padding: 0 calc(0.5rem + 0.5vw);
+    transition: 0.2s ease-in;
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+    &:hover {
+      background-color: $secondary-color;
+      cursor: pointer;
+      transition: 0.2s ease-out;
+    }
+  }
+  & input {
+    border: 2px solid $tertiary-color;
+    border-radius: calc(0.25rem + 0.25vw);
+    height: calc(1.5rem + 0.5vw);
+    margin-bottom: calc(1rem + 0.25vw);
+    padding: 0 calc(0.25rem + 0.25vw);
+    width: 100%;
+    &:focus {
+      border: 2px solid $secondary-color;
+      box-shadow: none;
+      outline: none;
+    }
+  }
 }
 
 .step-2 {

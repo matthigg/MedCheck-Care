@@ -25,17 +25,18 @@
       Type in the names of prescription medications, OTC medications, and/or
       herbal supplements to check for interactions
     </p>
-    <form [formGroup]="medGroup" (ngSubmit)="onSubmit()">
-      <input type="text" *ngFor="let field of medFormFields | keyvalue" formControlName="{{ field.key }}">
+    <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
+      <label *ngFor="let field of medFormFields | keyvalue">
+        <input id="{{ field.key }}" type="text" formControlName="{{ field.key }}">
+      </label>
       <button type="button" (click)="medFormAddField()">+Add Medication</button>
-      <button type="submit" [disabled]="!medGroup.valid">Submit</button>
     </form>
-
   </div>
 
   <div class="step-2">
     <h3>Step 2</h3>
     <p>Click for results</p>
+    <button type="submit" form="medForm" [disabled]="!medGroup.valid">Submit</button>
   </div>
 
   <div class="step-3">
