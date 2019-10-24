@@ -8,8 +8,8 @@ export class NihDiApiService {
 
   constructor() { }
 
-  fetchNIHResults(): Observable<any> {
-    return of(['di 1', 'di 2', 'di 3']);
+  fetchNIHResults(meds): Observable<any> {
+    return of(meds);
   }
 
 }

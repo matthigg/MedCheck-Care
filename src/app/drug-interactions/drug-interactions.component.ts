@@ -30,14 +30,6 @@ export class DrugInteractionsComponent implements OnInit {
 
   ngOnInit() {
     this.emitPageTitle();
-    this.getNIHResults();
-  }
-
-  // Get NIH drug interaction API results from the NihDiApiService.
-  getNIHResults() {
-    this.nihDiApiService.fetchNIHResults()
-      .subscribe(results => this.nihResults = results);
-    console.log(this.nihResults);
   }
 
   // Add a medication input field.
@@ -57,8 +49,11 @@ export class DrugInteractionsComponent implements OnInit {
     this.pageTitle.emit('Drug Interactions');
   }
 
+  // Get NIH drug interaction API results from the NihDiApiService.
   onSubmit() {
-    console.log('this.medGroup:', this.medGroup.value);
+  this.nihDiApiService.fetchNIHResults(this.medGroup.value.meds)
+    .subscribe(results => this.nihResults = results);
+  console.log(this.nihResults);
   }
 
 }
