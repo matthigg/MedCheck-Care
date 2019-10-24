@@ -2,6 +2,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +32,7 @@ import { SvgSpriteSheetComponent } from './svg-sprite-sheet/svg-sprite-sheet.com
     BrowserAnimationsModule,
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     LayoutModule,
     MatButtonModule,
     MatIconModule,
@@ -39,7 +41,9 @@ import { SvgSpriteSheetComponent } from './svg-sprite-sheet/svg-sprite-sheet.com
     MatToolbarModule,
     ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [
+    HttpClientModule,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

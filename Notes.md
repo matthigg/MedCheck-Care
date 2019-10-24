@@ -210,3 +210,160 @@
   1. https://material.angular.io/guide/getting-started
   2. https://material.angular.io/guide/schematics
   3. https://codinglatte.com/posts/angular/angular-flex-better-than-bootstrap/
+
+## Angular Material Sidenav & Overall View Anatomy (for this project)
+
+- This site went with Angular Material's sidenav for the main navigation component, which means that all of the views in the site are embedded within the <app-side-nav> element of the SideNavComponent's template. This sidenav component's template has a "title" field that displays the title/header of each different page view. 
+
+- The individual page views are rendered via the AppRoutingModule, which will replace/swap its <router-outlet> element with the template of whichever component the user/client is currently requesting to view. The nesting structure looks something like this:
+
+-- ~/src/app/app.component.html
+
+  <app-side-nav>
+    <h1>{{ pageTitle }}</h1>
+    ...
+    <router-outlet></router-outlet> // this is a placeholder for all other views
+    ...
+  </app-side-nav>
+
+  ... if you were to navigate to the "about" view, for instance, the structure would (roughly) rearrange to look something like this:
+
+-- ~/src/app/app.component.html
+
+  <app-side-nav>
+    <h1>{{ pageTitle }}</h1>
+    ...
+    <app-about></app-about> // the "about" view gets swapped in
+    ...
+  </app-side-nav>
+
+  ... when the "about" view gets swapped in, it needs some way to change the {{ pageTitle }} interpolation/template expression to reflect the new view, ie. <h1>About</h1>.
+
+- In a situation that does not involve the AppRoutingModule, or Angular routing, you would perhaps nest the "About" view directly within the sidenav component. In this situation, you could use the @Input and @Output decorators to handle dataflow between the about component and sidenav component in a parent/child relationship type of manner (in this project, you would just need to @Output the title from the child component so that the parent sidenav component would see it).
+
+- However, since this (and most) sites are dynamic, and the "About" view isn't the only view, we're using Angular routing which creates the above scenario where there isn't -technically- a parent/child relationship. To solve this problem, you can either A) create a service to handle changing the page title, or B) use the <router-outlet>'s built-in "activate" and "deactivate" functions which automatically emit whenever a component is swapped in/created, or swapped out/destroyed. This project uses the "activate" and "deactivate" functions to simulate a parent/child relationship between the sidenav component and all of the other components whose views can be displayed within the sidenav.
+
+## Reactive vs. Template Forms
+
+- Angular offers two approaches to handling user input with forms: reactive and template-based. Reactive forms are more robust in that they're more scalable, reusable, and testable, whereas template forms are easier to add and much simpler. 
+
+- Both types use a "form model", similar to Django. In both types of forms there is a single source of truth -- in reactive forms it is the form model, in template forms it is the template itself.
+
+- Dataflow in reactive forms is synchronous and 1 way: either from the view to the model, or from the model to the view. This is part of what makes them easier to test. Additionally, each time a change is triggered to a form model the FormControl instance returns a new data model rather than updating the existing one, which means that the data structure is immutable.
+
+- Dataflow in template forms is asynchronous and managed by a directive like NgModel that handles 2-way data binding. This means that template forms are mutable, since they rely on 2-way data binding which updates the form model as changes are made in the template.
+
+  1. https://angular.io/guide/forms-overview
+
+## Reactive Forms Overview
+
+- To use reactive forms requires importing ReactiveFormsModule into ~/src/app/app.module.ts and including it in @NgModele's array of imports[] (or whatever module you're using it in).
+
+- Next, the reactive form can be bound to elements in the DOM via either the [formControl] or [formGroup] bindings, where [formControl] is usually bound to a single input form field and [formGroup] is usually bound to a collection of input form fields, or an array of fields. For example:
+
+  > Using a single Form Control:
+
+    <label>First Name:<br>
+      <input [formControl]="firstName">
+    </label>
+
+  > Using a Form Group:
+
+    <form [formGroup]="newUserForm">        // formGroupName is also valid
+      <label>First Name:<br>
+        <input formControlName="firstName"> // notice syntax change
+      </label>
+      <label>Last Name:<br>
+        <input formControlName="lastName">  // [formControl] is also valid
+      </label>
+    </form>
+
+    ... note: I think the syntax is interchangeable, need to 2x check later.
+
+- In the component, the Form Group would look something like this:
+
+  ...
+  @Component({
+    ...
+  })
+  export class NewUserComponent {
+    newUserForm = new FormGroup({
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+    })
+
+    constructor() {}
+    ...
+  }
+
+- Form Control values can be displayed in two ways:
+
+  > Using the valueChanges observable, which can be listened to for changes using AsyncPipe in a template, or *.subscribe() in a component class.
+
+  > Using the *.value property in a template expression, which gives you a snapshot of the current value.
+
+- Form Control values can be altered by a user when they type information into an input field/check a checkbox/etc, or programmatically within a component class using the *.setValue() method.
+
+- Writing out the syntax to create a reactive form model in a component is pretty verbose, but there is a slightly more terse approach which involves using a Form Builder, which is a dependency injection whose singleton instance can take an object as an argument and use that as a model to create a form.
+
+- Form Arrays are similar to Form Controls except that you can generate an arbitrary number of them programmatically. This is useful when you have an indeterminate number of input fields, ie. a drug-drug interaction form that can accept between 2 and 50 different drugs to check for interactions, which can be created or deleted by anyone using the form. They can be created using the *.array() method of a Form Builder instance.
+
+- Form Arrays must exist within a Form Group, and cannot stand alone (unlike Form Controls).
+
+  1. https://angular.io/guide/reactive-forms
+
+## NIH Drug Interaction API Service
+
+- 
+
+
+
+
+
+
+
+## Testing
+
+- There are generally 3 categories of front-end testing: unit, integrated, and end-to-end (e2e). In Angular, each of these types of tests might take the following descriptions:
+
+  1. Unit       - testing an individual component
+  2. Integrated - testing a component + its template
+  3. End-to-end - testing a component, its template, services, routing, etc.
+
+- Angular 8 comes packged together with Karma and Jasmine for unit and integration tests, as well as Protractor for end-to-end tests. When creating modules, components, and services using the Angular CLI, Jasmine test files with the *.spec.ts extension are automatically generated. You can automate all tests to continually run from the command line via:
+
+  $ ng test
+
+- Karma is a test runner that automates running Jasmine tests from the command line. In Angular, this would be accomplished by running the `ng test` command mentioned above.
+
+- Jasmine is a test framework used to write tests with a straight-forward and descriptive syntax that is characterized as "behavior-driven development", or BDD (which is a specific type of test-driven development, or TDD). 
+
+  > Jasmine test are grouped together by "test suites", which are a collection of "test specs" which characterize individual tests. Specifically, Jasmine's describe() function defines a "test suite", and Jasmine's it() function defines a "test spec". Typically, you'll see a describe() function containing one or more it() functions.
+
+  > Each it() function usually consists of an expect() function in conjunction with some kind of comparative method, like *.toEqual(). The expect() function is a "test expectation". There is a list of these so-called comparative methods in Jasmine, which are officially referred to as "matcher expressions". The expect() function, along with its "matcher expression", make up the specific syntax that is used to evaluate a specific test. For example:
+
+    describe('Hello World Function', () => {
+      it('says hello', () => {
+        expect(helloWorld()).toEqual('Hello World!'); // specific test 
+      });
+    });
+
+  ... note that you can disable describe() and it() functions by prepending them with "x", ie. xdescribe(), xit(). Conversely, you can "focus" on, or give precedence to certain describe() and it() functions while ignore other by prepending them with "f", ie. fdescribe(), fit(). 
+
+- In addition to "test suites" and "test specs", tests sometimes include periods of set-up and tear-down activities which are used to create or destroy certain parts of the testing environment. Some of these functions include:
+
+  > beforeAll   - called once before a test suite runs
+  > afterAll    - called once after a test suite runs
+  > beforeEach  - called before each test spec runs
+  > afterEach   - called after each test spec runs
+
+- To manually run a Jasmine test, you would create an HTML file, along with any relevant CSS and JavaScript. You would place the Jasmine test.js file -after- all other JavaScript (and, I guess, CSS) has been loaded, near the bottom of the HTML file, and then view the page in a browser or an online editor like Plunker. Jasmine runs after window.onload fires. Each time you make a change and want to run another Jasmine test, you just have to reload the browser to trigger another window.onload event. 
+
+- However, constantly reloading the browser to run Jasmine tests can get tedious, which is where Karma comes in. Karma is a task runner which can spawn browser windows and run Jasmine tests inside of those windows from the command line. It can display the results of those tests both in the browser window, and in the command line environment. 
+
+- Additionally, Karma can watch development files and re-run these Jasmine tests automatically (which characterizes its "hot reloading" feature in the browser window).
+
+- When running test using the automatically-generated test stubs in Angular, ie. the *.spec.ts files, it's important to manually import modules in some of the test, since they are not automatically included. Some modules that usually need to be manually imported into the test for components that use them are RouterTestingModule, ReactiveFormsModule, and HttpClientTestingModule. 
+
+  1. https://codecraft.tv/courses/angular/unit-testing/jasmine-and-karma/
+  2. https://stackoverflow.com/questions/47236963/no-provider-for-httpclient

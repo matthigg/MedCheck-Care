@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 import { DrugInteractionsComponent } from './drug-interactions.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('DrugInteractionsComponent', () => {
   let component: DrugInteractionsComponent;
@@ -15,6 +15,7 @@ describe('DrugInteractionsComponent', () => {
       ],
       imports: [
         FormsModule,
+        HttpClientTestingModule,
         ReactiveFormsModule,
       ]
     })
