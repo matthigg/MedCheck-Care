@@ -35,7 +35,8 @@ export class DrugInteractionsComponent implements OnInit {
 
   // Get NIH drug interaction API results from the NihDiApiService.
   getNIHResults() {
-    this.nihResults = this.nihDiApiService.fetchNIHResults();
+    this.nihDiApiService.fetchNIHResults()
+      .subscribe(results => this.nihResults = results);
     console.log(this.nihResults);
   }
 
