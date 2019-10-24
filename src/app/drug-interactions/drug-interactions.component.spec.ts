@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { DrugInteractionsComponent } from './drug-interactions.component';
 
 describe('DrugInteractionsComponent', () => {
@@ -8,7 +10,13 @@ describe('DrugInteractionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DrugInteractionsComponent ]
+      declarations: [ 
+        DrugInteractionsComponent,
+      ],
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+      ]
     })
     .compileComponents();
   }));
