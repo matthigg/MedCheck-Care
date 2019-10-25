@@ -63,22 +63,22 @@ export class DrugInteractionsComponent implements OnInit {
     const medObservables: {med, observable}[] = this.nihRxnormApiService.fetchNihRxnormApi(this.medGroup.value.meds);
     medObservables.forEach(medObservable => {
 
-      const medObservableUnsubscribe = () => {
-
-      }
-
-      const nextNihResponse = (res) => {
-        this.nihRxnormResponses.push({
-          'med': medObservable.med, 
-          'rxcui': (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
-        })
-      }
-
-      medObservable.observable.subscribe({
+      // Subscribe to the medObservable.observable observable (ha).
+      const medObservableSubscription = medObservable.observable.subscribe({
         next: res => nextNihResponse(res),
         error: err => console.log('NIH RxNorm API - Error:', err),
         complete: console.log('NIH RxNorm API - Complete.')
       });
+
+      // Store the results of the "next" response in the nihRxnormResponses[]
+      // array, and then unsubscribe from the medObservableSubscription.
+      const nextNihResponse = (res) => {
+        this.nihRxnormResponses.push({
+          'med': medObservable.med, 
+          'rxcui': (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
+        });
+        medObservableSubscription.unsubscribe()
+      }
     });
 
     // Show nihRxnormResponses
