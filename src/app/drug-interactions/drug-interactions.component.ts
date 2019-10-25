@@ -57,6 +57,9 @@ export class DrugInteractionsComponent implements OnInit {
   // Get NIH drug interaction API results.
   onSubmit(): void {
 
+    // Clear previous results.
+    this.nihRxnormResponses = [];
+
     // Fetch observables from the NIH RxNorm API, which is used to retrieve RxCUI 
     // numbers, for each user-submitted medication and then subscribe to each
     // observable.
