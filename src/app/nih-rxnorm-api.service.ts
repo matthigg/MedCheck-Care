@@ -13,12 +13,12 @@ export class NihRxnormApiService {
   // values for each medication name in a meds[] array.
   fetchNihRxnormApi(meds: string[]): {med: string, observable: Observable<object>}[] {
     const medObservables: {med, observable}[] = []
-    const nihRxnormBaseURL = 'https://rxnav.nlm.nih.gov/REST/rxcui?name='
+    const nihRxnormBaseURL = 'https://rxnav.nlm.nih.gov/REST/rxcui?name=';
     meds.forEach(med => {
       if (med) {
-        medObservables.push({ 'med': med, 'observable': this.http.get(nihRxnormBaseURL + med)})
+        medObservables.push({ 'med': med, 'observable': this.http.get(nihRxnormBaseURL + med)});
       }
-    })
+    });
     return medObservables;
   }
 

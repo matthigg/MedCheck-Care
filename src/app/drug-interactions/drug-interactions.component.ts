@@ -61,7 +61,9 @@ export class DrugInteractionsComponent implements OnInit {
     this.nihRxnormResponses = [];
 
     // Fetch observables from the NIH RxNorm API, which is used to retrieve RxCUI 
-    // numbers, for each user-submitted medication and then subscribe to each
+    // numbers, for each user-submitted medication and store the retrieved
+    // observables within objects that get pushed into an array. Iterate over the
+    // array of objects containing the retrieved observables, and subscribe to each
     // observable.
     const medObservables: {med, observable}[] = this.nihRxnormApiService.fetchNihRxnormApi(this.medGroup.value.meds);
     medObservables.forEach(medObservable => {
@@ -73,30 +75,34 @@ export class DrugInteractionsComponent implements OnInit {
         complete: console.log('NIH RxNorm API - Complete.')
       });
 
-      // Store the results of the "next" response in the nihRxnormResponses[]
-      // array, and then unsubscribe from the medObservableSubscription.
+      // Store the result of the "next" response in the nihRxnormResponses[]
+      // array, and then unsubscribe from the medObservableSubscription. 
       const nextNihResponse = (res) => {
         this.nihRxnormResponses.push({
           'med': medObservable.med, 
           'rxcui': (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
         });
         medObservableSubscription.unsubscribe()
-      }
-    });
 
-    // Show nihRxnormResponses
-    setTimeout(() => {
-      this.shownihRxnormResponses();
-    }, 1000);
+        // Responses for all submitted medications have been received.
+        if (medObservables.length === this.nihRxnormResponses.length) {
+          console.log('NIH RxNorm API - Success: Responses for all submitted medication requests have been received.')
+          this.nihDiApiService.fetchNihDiApi(this.nihRxnormResponses);
+
+        // Awaiting responses for all submitted medications.
+        } else {
+          console.log('NIH RxNorm API - Pending: Awaiting responses for all submitted medication requests.')
+        }
+      }
+
+    });
 
     // Fetch drug interactions from the NIH Drug Interaction API using the RxCUI
     // numbers retrieved from the NIH RxNorm API.
     // TODO
-  }
 
-  // Show nihRxnormResponses
-  shownihRxnormResponses() {
-    console.log(this.nihRxnormResponses);
+
+
   }
 
 }

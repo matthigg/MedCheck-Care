@@ -9,8 +9,8 @@ export class NihDiApiService {
 
   constructor(private http: HttpClient) { }
 
-  fetchNIHResults(meds) {
-    return meds
+  fetchNihDiApi(meds) {
+    console.log('NIH DI API service - meds:', meds);
   }
 
 }
