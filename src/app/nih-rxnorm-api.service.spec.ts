@@ -1,14 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NihDiApiService } from './nih-di-api.service';
+import { NihRxnormApiService } from './nih-rxnorm-api.service';
 import { TestBed } from '@angular/core/testing';
- 
-describe('NihDiApiService', () => {
-  beforeEach(() => TestBed.configureTestingModule({ 
+
+describe('NihRxnormApiService', () => {
+  beforeEach(() => TestBed.configureTestingModule({
     imports: [ HttpClientTestingModule ],
   }));
 
   it('should be created', () => {
-    const service: NihDiApiService = TestBed.get(NihDiApiService);
+    const service: NihRxnormApiService = TestBed.get(NihRxnormApiService);
     expect(service).toBeTruthy();
   });
 });

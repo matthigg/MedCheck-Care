@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,12 +8,9 @@ import { Observable, of } from 'rxjs';
 export class NihDiApiService {
 
   constructor(private http: HttpClient) { }
-  // constructor() { }
 
-  fetchNIHResults(meds): Observable<any> {
-    const nihBaseURL = 'https://rxnav.nlm.nih.gov/REST/rxcui?name='
-    // this.http.get('asdf')
-    return of(meds);
+  fetchNIHResults(meds) {
+    return meds
   }
 
 }

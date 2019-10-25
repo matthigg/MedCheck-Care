@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { NihDiApiService } from '../nih-di-api.service';
+import { NihRxnormApiService } from '../nih-rxnorm-api.service';
 
 @Component({
   selector: 'app-drug-interactions',
@@ -9,7 +10,7 @@ import { NihDiApiService } from '../nih-di-api.service';
 })
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
-  nihResults: {};
+  nihRxnormResponses: {}[] = [];
 
   // Define the form model. Users can change this model by adding or removing 
   // fields from the form.
@@ -26,19 +27,23 @@ export class DrugInteractionsComponent implements OnInit {
   // Declare an Angular Form Group.
   medGroup: FormGroup = this.formBuilder.group(this.medFormFields);
 
-  constructor(private formBuilder: FormBuilder, private nihDiApiService: NihDiApiService) { }
+  constructor (
+    private formBuilder: FormBuilder, 
+    private nihDiApiService: NihDiApiService,
+    private nihRxnormApiService: NihRxnormApiService,
+  ) { }
 
   ngOnInit() {
     this.emitPageTitle();
   }
 
   // Add a medication input field.
-  medFormAddField() {
+  medFormAddField(): void {
     this.meds.push(this.formBuilder.control(''));
   }
 
   // Delete a medication input field.
-  medFormDeleteField(medIndex) {
+  medFormDeleteField(medIndex: number): void {
     this.meds.removeAt(medIndex)
   }
 
@@ -49,11 +54,36 @@ export class DrugInteractionsComponent implements OnInit {
     this.pageTitle.emit('Drug Interactions');
   }
 
-  // Get NIH drug interaction API results from the NihDiApiService.
-  onSubmit() {
-  this.nihDiApiService.fetchNIHResults(this.medGroup.value.meds)
-    .subscribe(results => this.nihResults = results);
-  console.log(this.nihResults);
+  // Get NIH drug interaction API results.
+  onSubmit(): void {
+
+    // Fetch observables from the NIH RxNorm API, which is used to retrieve RxCUI 
+    // numbers, for each user-submitted medication and then subscribe to each
+    // observable.
+    const medObservables: {med, observable}[] = this.nihRxnormApiService.fetchNihRxnormApi(this.medGroup.value.meds);
+    medObservables.forEach(medObservable => {
+      medObservable.observable.subscribe({
+        next: res => this.nihRxnormResponses.push({ 
+          'med': medObservable.med, 
+          'rxcui': (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
+        }),
+        error: err => console.log('NIH RxNorm API - Error:', err),
+        complete: console.log('NIH RxNorm API - Complete.')
+      })
+    })
+
+    setTimeout(() => {
+      this.shownihRxnormResponses();
+    }, 1000);
+
+    // Fetch drug interactions from the NIH Drug Interaction API using the RxCUI
+    // numbers retrieved from the NIH RxNorm API.
+
+  }
+
+  // Show nihRxnormResponses
+  shownihRxnormResponses() {
+    console.log(this.nihRxnormResponses);
   }
 
 }
