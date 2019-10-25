@@ -62,23 +62,33 @@ export class DrugInteractionsComponent implements OnInit {
     // observable.
     const medObservables: {med, observable}[] = this.nihRxnormApiService.fetchNihRxnormApi(this.medGroup.value.meds);
     medObservables.forEach(medObservable => {
-      medObservable.observable.subscribe({
-        next: res => this.nihRxnormResponses.push({ 
+
+      const medObservableUnsubscribe = () => {
+
+      }
+
+      const nextNihResponse = (res) => {
+        this.nihRxnormResponses.push({
           'med': medObservable.med, 
           'rxcui': (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
-        }),
+        })
+      }
+
+      medObservable.observable.subscribe({
+        next: res => nextNihResponse(res),
         error: err => console.log('NIH RxNorm API - Error:', err),
         complete: console.log('NIH RxNorm API - Complete.')
-      })
-    })
+      });
+    });
 
+    // Show nihRxnormResponses
     setTimeout(() => {
       this.shownihRxnormResponses();
     }, 1000);
 
     // Fetch drug interactions from the NIH Drug Interaction API using the RxCUI
     // numbers retrieved from the NIH RxNorm API.
-
+    // TODO
   }
 
   // Show nihRxnormResponses
