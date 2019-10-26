@@ -61,6 +61,8 @@ export class DrugInteractionsComponent implements OnInit {
     // Clear previous results.
     this.rxNormResponses = [];
 
+    // ---------- NIH RxNorm API ----------
+
     // Send user-submitted medications to the NIH RxNorm API using the 
     // nihRxnormAPIService service, which returns an array of objects containing
     // observables that can receive RxCUI numbers.
@@ -75,8 +77,12 @@ export class DrugInteractionsComponent implements OnInit {
       });
     });
 
+    // ---------- NIH Drug Interactions API ----------
+
     // Store the RxCUI numbers from the "next" response in the rxNormResponses[]
-    // array, and then unsubscribe from the rxNormSubscription. 
+    // array, unsubscribe from the rxNormSubscription, and initiate NIH Drug
+    // Interactions API request once all responses from the NIH RxNorm API have
+    // been received.
     const nextRxNormResponse = (res: {idGroup: {rxnormId}}, med, rxNorm$Subscription) => {
       this.rxNormResponses.push(
         (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : `No valid RxCUI number found for "${med}".` })() 
@@ -102,6 +108,8 @@ export class DrugInteractionsComponent implements OnInit {
         });
       }
     }
+
+    // ---------- NIH Drug Interactions API Results ----------
 
     // Handle results from NIH Drug Interactions API request.
     interface DiResult {
