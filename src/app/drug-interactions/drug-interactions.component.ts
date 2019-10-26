@@ -62,26 +62,26 @@ export class DrugInteractionsComponent implements OnInit {
     this.rxNormResponses = [];
 
     // Send user-submitted medications to the NIH RxNorm API using the 
-    // nihRxnormAPIService service, which returns an array of observables that 
-    // can receive RxCUI numbers.
-    const rxNormObservables: Observable<object>[] = this.nihRxnormApiService.fetchRxNormApi(this.medGroup.value.meds);
-    rxNormObservables.forEach(rxNorm$ => {
+    // nihRxnormAPIService service, which returns an array of objects containing
+    // observables that can receive RxCUI numbers.
+    const rxNormObservables: {med: string, observable: Observable<object>}[] = this.nihRxnormApiService.fetchRxNormApi(this.medGroup.value.meds);
+    rxNormObservables.forEach(rxNormObservable => {
 
-      // Subscribe to each rxNorm$ observable in order to retrieve RxCUI numbers.
-      const rxNorm$Subscription = rxNorm$.subscribe({
-        next: (res: {idGroup: {rxnormId}}) => nextRxNormResponse(res, rxNorm$Subscription),
+      // Subscribe to each rxNorm observable in order to retrieve RxCUI numbers.
+      const rxNormSubscription = rxNormObservable.observable.subscribe({
+        next: (res: {idGroup: {rxnormId}}) => nextRxNormResponse(res, rxNormObservable.med, rxNormSubscription),
         error: err => console.log('NIH RxNorm API - Error:', err),
         complete: () => console.log('NIH RxNorm API - Complete.')
       });
     });
 
     // Store the RxCUI numbers from the "next" response in the rxNormResponses[]
-    // array, and then unsubscribe from the rxNorm$Subscription. 
-    const nextRxNormResponse = (res: {idGroup: {rxnormId}}, rxNorm$Subscription) => {
+    // array, and then unsubscribe from the rxNormSubscription. 
+    const nextRxNormResponse = (res: {idGroup: {rxnormId}}, med, rxNormSubscription) => {
       this.rxNormResponses.push(
-        (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
+        (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : `No valid RxCUI number found for "${med}".` })() 
       );
-      rxNorm$Subscription.unsubscribe()
+      rxNormSubscription.unsubscribe()
 
       // Awaiting responses/RxCUI numbers from the NIH RxNorm API for all 
       // user-submitted medications.
@@ -96,11 +96,61 @@ export class DrugInteractionsComponent implements OnInit {
         console.log('NIH RxNorm API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxNormResponses);
         const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxNormResponses);
         const di$Subscription = di$.subscribe({
-          next: res => console.log('NIH Drug Interactions API - Next:', res),
+          next: res => nextDiResponse(res),
           error: err => console.log('NIH Drug Interactions API - Error:', err),
           complete: () => console.log('NIH Drug Interactions API - Complete.')
         });
       }
     }
+
+    // Handle results from NIH Drug Interactions API request.
+    const nextDiResponse = (res) => {
+      console.log('nextDiResponse():', res);
+      if (res.fullInteractionTypeGroup) {
+        res
+          .fullInteractionTypeGroup[0]
+          .fullInteractionType.forEach(it => {
+            it.interactionPair.forEach(ip => console.log(ip.description))
+          });
+        res
+          .fullInteractionTypeGroup[0]
+          .fullInteractionType[0]
+          .interactionPair
+          .forEach(ip => ip.interactionConcept
+            .forEach(ic => 
+              console.log(
+                ic.minConceptItem.name, 
+                ic.sourceConceptItem.name, 
+                ic.sourceConceptItem.url
+              )
+            )
+          )
+      } else {
+        console.log('No interactions to report.');
+      }
+    }
   }
 }
+
+
+// Drug interactions
+// object
+//   .fullInteractionTypeGroup[0]
+//   .fullInteractionType[0]
+//   .interactionPair
+//   .forEach(obj => console.log(obj.description))
+
+// Drug brand name, generic name, and URL
+// object
+//   .fullInteractionTypeGroup[0]
+//   .fullInteractionType[0]
+//   .interactionPair
+//   .forEach(obj => obj.interactionConcept
+//     .forEach(objX => 
+//       console.log(
+//         minConceptItem.name, 
+//         sourceConceptItem.name, 
+//         sourceConceptItem.url
+//       )
+//     )
+//   )

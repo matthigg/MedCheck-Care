@@ -16,7 +16,6 @@ export class NihDiApiService {
     meds.forEach(med => {
       nihDiApiParamsArray.push(med);
     })
-    console.log('NIH DI API PARAMS:', nihDiApiParamsArray)
     return this.http.get('https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=' + nihDiApiParamsArray.join('+'));
   }
 }
