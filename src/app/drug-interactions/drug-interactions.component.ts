@@ -68,20 +68,20 @@ export class DrugInteractionsComponent implements OnInit {
     rxNormObservables.forEach(rxNormObservable => {
 
       // Subscribe to each rxNorm observable in order to retrieve RxCUI numbers.
-      const rxNormSubscription = rxNormObservable.observable.subscribe({
-        next: (res: {idGroup: {rxnormId}}) => nextRxNormResponse(res, rxNormObservable.med, rxNormSubscription),
+      const rxNorm$Subscription = rxNormObservable.observable.subscribe({
+        next: (res: {idGroup: {rxnormId}}) => nextRxNormResponse(res, rxNormObservable.med, rxNorm$Subscription),
         error: err => console.log('NIH RxNorm API - Error:', err),
-        complete: () => console.log('NIH RxNorm API - Complete.')
+        complete: () => console.log('NIH RxNorm API - Complete.'),
       });
     });
 
     // Store the RxCUI numbers from the "next" response in the rxNormResponses[]
     // array, and then unsubscribe from the rxNormSubscription. 
-    const nextRxNormResponse = (res: {idGroup: {rxnormId}}, med, rxNormSubscription) => {
+    const nextRxNormResponse = (res: {idGroup: {rxnormId}}, med, rxNorm$Subscription) => {
       this.rxNormResponses.push(
         (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : `No valid RxCUI number found for "${med}".` })() 
       );
-      rxNormSubscription.unsubscribe()
+      rxNorm$Subscription.unsubscribe()
 
       // Awaiting responses/RxCUI numbers from the NIH RxNorm API for all 
       // user-submitted medications.
@@ -96,9 +96,9 @@ export class DrugInteractionsComponent implements OnInit {
         console.log('NIH RxNorm API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxNormResponses);
         const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxNormResponses);
         const di$Subscription = di$.subscribe({
-          next: res => nextDiResponse(res),
+          next: res => nextDiResponse(res, di$Subscription),
           error: err => console.log('NIH Drug Interactions API - Error:', err),
-          complete: () => console.log('NIH Drug Interactions API - Complete.')
+          complete: () => console.log('NIH Drug Interactions API - Complete.'),
         });
       }
     }
@@ -106,9 +106,9 @@ export class DrugInteractionsComponent implements OnInit {
     // Handle results from NIH Drug Interactions API request.
     interface DiResult {
       interaction: string, 
-      meds: {name, genericName, url}[]
+      meds: {name: string, genericName: string, url: string}[],
     }
-    const nextDiResponse = (res) => {
+    const nextDiResponse = (res, di$Subscription) => {
       const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
         const diResult: DiResult = {
@@ -135,6 +135,7 @@ export class DrugInteractionsComponent implements OnInit {
       } else {
         console.log('=== NIH Drug Interaction API RESULTS: No interactions to report.');
       }
+      di$Subscription.unsubscribe();
     }
   }
 }
