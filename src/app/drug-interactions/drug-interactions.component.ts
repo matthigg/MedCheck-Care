@@ -105,26 +105,32 @@ export class DrugInteractionsComponent implements OnInit {
 
     // Handle results from NIH Drug Interactions API request.
     const nextDiResponse = (res) => {
-      console.log('nextDiResponse():', res);
+      const diResults: {description: string, meds: {name: string, genericName: string, url: string}[]} = {
+        description: '',
+        meds: [],
+      }
       if (res.fullInteractionTypeGroup) {
         res
           .fullInteractionTypeGroup[0]
           .fullInteractionType.forEach(it => {
-            it.interactionPair.forEach(ip => console.log(ip.description))
+            it.interactionPair.forEach(ip => {
+              diResults.description = ip.description
+            });
           });
         res
           .fullInteractionTypeGroup[0]
           .fullInteractionType[0]
           .interactionPair
           .forEach(ip => ip.interactionConcept
-            .forEach(ic => 
-              console.log(
-                ic.minConceptItem.name, 
-                ic.sourceConceptItem.name, 
-                ic.sourceConceptItem.url
-              )
-            )
+            .forEach(ic => {
+              diResults.meds.push({
+                name: ic.minConceptItem.name,
+                genericName: ic.sourceConceptItem.name,
+                url: ic.sourceConceptItem.url,
+              })
+            })
           )
+        console.log('RESULTS:', diResults);
       } else {
         console.log('No interactions to report.');
       }
