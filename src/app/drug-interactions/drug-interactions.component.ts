@@ -104,35 +104,36 @@ export class DrugInteractionsComponent implements OnInit {
     }
 
     // Handle results from NIH Drug Interactions API request.
+    interface DiResult {
+      interaction: string, 
+      meds: {name, genericName, url}[]
+    }
     const nextDiResponse = (res) => {
-      const diResults: {description: string, meds: {name: string, genericName: string, url: string}[]} = {
-        description: '',
-        meds: [],
-      }
+      const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
+        const diResult: DiResult = {
+          interaction: null,
+          meds: []
+        }
         res
-          .fullInteractionTypeGroup[0]
-          .fullInteractionType.forEach(it => {
-            it.interactionPair.forEach(ip => {
-              diResults.description = ip.description
+          .fullInteractionTypeGroup.forEach(itg => {
+            itg.fullInteractionType.forEach(it => {
+              it.interactionPair.forEach(ip => {
+                diResult.interaction = ip.description
+                ip.interactionConcept.forEach(ic => {
+                  diResult.meds.push({
+                    name: ic.minConceptItem.name,
+                    genericName: ic.sourceConceptItem.name,
+                    url: ic.sourceConceptItem.url,
+                  });
+                });
+              });
             });
           });
-        res
-          .fullInteractionTypeGroup[0]
-          .fullInteractionType[0]
-          .interactionPair
-          .forEach(ip => ip.interactionConcept
-            .forEach(ic => {
-              diResults.meds.push({
-                name: ic.minConceptItem.name,
-                genericName: ic.sourceConceptItem.name,
-                url: ic.sourceConceptItem.url,
-              })
-            })
-          )
-        console.log('RESULTS:', diResults);
+        diResults.push(diResult);
+        console.log('=== NIH Drug Interaction API RESULTS:', diResults);
       } else {
-        console.log('No interactions to report.');
+        console.log('=== NIH Drug Interaction API RESULTS: No interactions to report.');
       }
     }
   }
