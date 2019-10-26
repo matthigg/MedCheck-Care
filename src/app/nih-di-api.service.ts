@@ -9,8 +9,14 @@ export class NihDiApiService {
 
   constructor(private http: HttpClient) { }
 
-  fetchNihDiApi(meds) {
-    console.log('NIH DI API service - meds:', meds);
+  // Stitch together the URL for the NIH Drug Interactions API request, and 
+  // then make request and return the observable.
+  fetchDiApi(meds: string[]): Observable<object> {
+    const nihDiApiParamsArray = [];
+    meds.forEach(med => {
+      nihDiApiParamsArray.push(med);
+    })
+    console.log('NIH DI API PARAMS:', nihDiApiParamsArray)
+    return this.http.get('https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=' + nihDiApiParamsArray.join('+'));
   }
-
 }

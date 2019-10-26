@@ -11,15 +11,14 @@ export class NihRxnormApiService {
 
   // Send a request to the NIH RxNorm API with the intention of retrieving RxCUI
   // values for each medication name in a meds[] array.
-  fetchNihRxnormApi(meds: string[]): {med: string, observable: Observable<object>}[] {
-    const medObservables: {med, observable}[] = []
-    const nihRxnormBaseURL = 'https://rxnav.nlm.nih.gov/REST/rxcui?name=';
+  fetchRxNormApi(meds: string[]): Observable<object>[] {
+    const rxNormObservables: Observable<object>[] = [];
     meds.forEach(med => {
       if (med) {
-        medObservables.push({ 'med': med, 'observable': this.http.get(nihRxnormBaseURL + med)});
+        rxNormObservables.push(this.http.get('https://rxnav.nlm.nih.gov/REST/rxcui?name=' + med));
       }
     });
-    return medObservables;
+    return rxNormObservables;
   }
 
 }

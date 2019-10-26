@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { NihDiApiService } from '../nih-di-api.service';
 import { NihRxnormApiService } from '../nih-rxnorm-api.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-drug-interactions',
@@ -10,7 +11,7 @@ import { NihRxnormApiService } from '../nih-rxnorm-api.service';
 })
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
-  nihRxnormResponses: {}[] = [];
+  rxNormResponses: string[] = [];
 
   // Define the form model. Users can change this model by adding or removing 
   // fields from the form.
@@ -55,54 +56,55 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   // Get NIH drug interaction API results.
-  onSubmit(): void {
+  onSubmit() {
 
     // Clear previous results.
-    this.nihRxnormResponses = [];
+    this.rxNormResponses = [];
 
-    // Fetch observables from the NIH RxNorm API, which is used to retrieve RxCUI 
-    // numbers, for each user-submitted medication and store the retrieved
-    // observables within objects that get pushed into an array. Iterate over the
-    // array of objects containing the retrieved observables, and subscribe to each
-    // observable.
-    const medObservables: {med, observable}[] = this.nihRxnormApiService.fetchNihRxnormApi(this.medGroup.value.meds);
-    medObservables.forEach(medObservable => {
+    // Fetch RxCUI numbers from the NIH RxNorm API for each user-submitted
+    // medication using the nihRxnormAPIService, which returns an array of 
+    // objects containing two properties: 'med' which represents the user-
+    // submitted medication name, and 'observable' which represents an
+    // observable that, when subscribed to, returns the medication's corresponding
+    // RxCUI number.
+    const rxNormObservables: Observable<object>[] = this.nihRxnormApiService.fetchRxNormApi(this.medGroup.value.meds);
+    rxNormObservables.forEach(rxNorm$ => {
 
-      // Subscribe to the medObservable.observable observable (ha).
-      const medObservableSubscription = medObservable.observable.subscribe({
-        next: res => nextNihResponse(res),
+      // Subscribe to the medObservable.observable observable (ha) to retrieve
+      // RxCUI numbers.
+      const rxNorm$Subscription = rxNorm$.subscribe({
+        next: (res: {idGroup: {rxnormId}}) => nextRxNormResponse(res),
         error: err => console.log('NIH RxNorm API - Error:', err),
-        complete: console.log('NIH RxNorm API - Complete.')
+        complete: () => console.log('NIH RxNorm API - Complete.')
       });
 
       // Store the result of the "next" response in the nihRxnormResponses[]
       // array, and then unsubscribe from the medObservableSubscription. 
-      const nextNihResponse = (res) => {
-        this.nihRxnormResponses.push({
-          'med': medObservable.med, 
-          'rxcui': (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
-        });
-        medObservableSubscription.unsubscribe()
+      const nextRxNormResponse = (res: {idGroup: {rxnormId}}) => {
+        this.rxNormResponses.push(
+          (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
+        );
+        rxNorm$Subscription.unsubscribe()
 
-        // Responses for all submitted medications have been received.
-        if (medObservables.length === this.nihRxnormResponses.length) {
-          console.log('NIH RxNorm API - Success: Responses for all submitted medication requests have been received.')
-          this.nihDiApiService.fetchNihDiApi(this.nihRxnormResponses);
+        // If responses/RxCUI numbers for all submitted medications have been 
+        // received from the NIH RxNorm API, then send the RxCUI numbers to the 
+        // NIH Drug Interactions API using the nihDiApiService, which returns a
+        // single observable. 
+        if (rxNormObservables.length === this.rxNormResponses.length) {
+          console.log('NIH RxNorm API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxNormResponses);
+          const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxNormResponses);
+          const di$Subscription = di$.subscribe({
+            next: res => console.log('NIH Drug Interactions API - Next:', res),
+            error: err => console.log('NIH Drug Interactions API - Error:', err),
+            complete: () => console.log('NIH Drug Interactions API - Complete.')
+          });
 
-        // Awaiting responses for all submitted medications.
+        // Awaiting responses/RxCUI numbers from the NIH RxNorm API for all submitted 
+        // medications.
         } else {
           console.log('NIH RxNorm API - Pending: Awaiting responses for all submitted medication requests.')
         }
       }
-
     });
-
-    // Fetch drug interactions from the NIH Drug Interaction API using the RxCUI
-    // numbers retrieved from the NIH RxNorm API.
-    // TODO
-
-
-
   }
-
 }
