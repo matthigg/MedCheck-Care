@@ -61,35 +61,31 @@ export class DrugInteractionsComponent implements OnInit {
     // Clear previous results.
     this.rxNormResponses = [];
 
-    // Fetch RxCUI numbers from the NIH RxNorm API for each user-submitted
-    // medication using the nihRxnormAPIService, which returns an array of 
-    // objects containing two properties: 'med' which represents the user-
-    // submitted medication name, and 'observable' which represents an
-    // observable that, when subscribed to, returns the medication's corresponding
-    // RxCUI number.
+    // Send user-submitted medications to the NIH RxNorm API using the 
+    // nihRxnormAPIService service, which returns an array of observables that 
+    // can receive RxCUI numbers.
     const rxNormObservables: Observable<object>[] = this.nihRxnormApiService.fetchRxNormApi(this.medGroup.value.meds);
     rxNormObservables.forEach(rxNorm$ => {
 
-      // Subscribe to the medObservable.observable observable (ha) to retrieve
-      // RxCUI numbers.
+      // Subscribe to each rxNorm$ observable in order to retrieve RxCUI numbers.
       const rxNorm$Subscription = rxNorm$.subscribe({
         next: (res: {idGroup: {rxnormId}}) => nextRxNormResponse(res),
         error: err => console.log('NIH RxNorm API - Error:', err),
         complete: () => console.log('NIH RxNorm API - Complete.')
       });
 
-      // Store the result of the "next" response in the nihRxnormResponses[]
-      // array, and then unsubscribe from the medObservableSubscription. 
+      // Store the RxCUI numbers from the "next" response in the rxNormResponses[]
+      // array, and then unsubscribe from the rxNorm$Subscription. 
       const nextRxNormResponse = (res: {idGroup: {rxnormId}}) => {
         this.rxNormResponses.push(
           (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : 'No valid RxCUI number found.' })() 
         );
         rxNorm$Subscription.unsubscribe()
 
-        // If responses/RxCUI numbers for all submitted medications have been 
-        // received from the NIH RxNorm API, then send the RxCUI numbers to the 
-        // NIH Drug Interactions API using the nihDiApiService, which returns a
-        // single observable. 
+        // If all responses/RxCUI numbers for user-submitted medications have been 
+        // received from the NIH RxNorm API, then send an array of RxCUI numbers 
+        // to the NIH Drug Interactions API using the nihDiApiService service, 
+        // which returns a single observable. 
         if (rxNormObservables.length === this.rxNormResponses.length) {
           console.log('NIH RxNorm API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxNormResponses);
           const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxNormResponses);
@@ -99,8 +95,8 @@ export class DrugInteractionsComponent implements OnInit {
             complete: () => console.log('NIH Drug Interactions API - Complete.')
           });
 
-        // Awaiting responses/RxCUI numbers from the NIH RxNorm API for all submitted 
-        // medications.
+        // Awaiting responses/RxCUI numbers from the NIH RxNorm API for all 
+        // user-submitted medications.
         } else {
           console.log('NIH RxNorm API - Pending: Awaiting responses for all submitted medication requests.')
         }
