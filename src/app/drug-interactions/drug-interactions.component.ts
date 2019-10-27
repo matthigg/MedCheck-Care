@@ -12,9 +12,9 @@ import { Observable } from 'rxjs';
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
   diDisclaimer: string;
-  diInteractions: Set<[]> = new Set([]);
+  diInteractions: Set<string> = new Set();
   diMedications: {} = {};
-  diUserInput: Set<[]> = new Set([]);
+  diUserInput: Set<string> = new Set();
   rxNormResponses: string[] = [];
 
   // Define the form model. Users can change this model by adding or removing 
@@ -122,6 +122,7 @@ export class DrugInteractionsComponent implements OnInit {
     // Handle results from NIH Drug Interactions API request.
     interface DiResult {
       interaction: string, 
+      comment: string,
       meds: {
         minConceptItem: string, 
         sourceConceptItem: string, 
@@ -142,6 +143,7 @@ export class DrugInteractionsComponent implements OnInit {
               fit.interactionPair.forEach(ip => {
                 const diResult: DiResult = {
                   interaction: null,
+                  comment: fit.comment,
                   meds: []
                 }
                 diResult.interaction = ip.description
@@ -168,9 +170,7 @@ export class DrugInteractionsComponent implements OnInit {
 
     const displayDiResults = (diResults) => {
       diResults.forEach(result => {
-
-        this.diInteractions.add(result.interaction);
-
+        this.diInteractions.add(`${result.interaction} Notes: ${result.comment}`);
         result.meds.forEach(med => {
           med.minConceptItem = medCapitalize(med.minConceptItem);
           med.sourceConceptItem = medCapitalize(med.sourceConceptItem);
