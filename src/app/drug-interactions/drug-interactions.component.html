@@ -26,23 +26,29 @@
       herbal supplements that you want to check for interactions. 
     </p>
     <p>
-      Note: brand 
-      name drugs are converted to their generic equivalents.
+      Click the "+Add Another Medication" button if you want to check additional 
+      medications for drug interactions, otherwise proceed to Step 2.
     </p>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">
+        <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Another Medication</button>
         <label *ngFor="let field of meds.controls; let i=index">
           <input type="text" [formControlName]="i">
           <button class="btn-delete" type="button" (click)="medFormDeleteField(i)">x</button>
         </label>
-        <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Medication</button>
       </div>
     </form>
   </div>
 
   <div class="step-2">
     <h3>Step 2</h3>
-    <p>Click the button below after you have entered all of the medications that you want to check.</p>
+    <p>
+      Click the button below after you have entered all of the medications that 
+      you want to check.
+    </p>
+    <p>
+      Note: brand name drugs are converted to their generic equivalents.
+    </p>
     <button class="btn-view-results" type="submit" form="medForm" [disabled]="!medGroup.valid">Check for Interactions</button>
   </div>
 
