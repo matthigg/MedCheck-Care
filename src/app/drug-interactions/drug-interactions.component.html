@@ -33,8 +33,8 @@
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">
         <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Another Medication</button>
-        <label *ngFor="let field of meds.controls; let i=index">
-          <input type="text" [formControlName]="i">
+        <label *ngFor="let field of meds.controls; let i=index; last as isLast">
+          <input type="text" [formControlName]="i" [ngClass]="{ 'last': isLast }">
           <button class="btn-delete" type="button" (click)="medFormDeleteField(i)">x</button>
         </label>
       </div>
@@ -55,7 +55,7 @@
 
   <div class="step-3">
     <h3>Step 3</h3>
-    <p>View, print, or save your results to your device. Saved results are in .pdf format.</p>
+    <p class="step-3-instructions">View, print, or save your results to your device. Saved results are in .pdf format.</p>
     <h4>Medications (Generic):</h4>
     <span *ngFor="let medUserInput of diUserInput">
       {{ medUserInput.name }}

@@ -37,13 +37,13 @@
   padding: calc(1rem + 1vw);
 }
 
-@media (min-width: 576px) {
+@media (min-width: 992px) {
   .grid-container {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(8, 1fr);
     grid-template-areas:
-    "intro intro discl discl"
-    "step1 step1 step2 step2"
-    "step3 step3 step3 step3";
+    "intro intro intro intro discl discl discl discl"
+    "step1 step1 step1 step1 step2 step2 step2 step2"
+    ".     step3 step3 step3 step3 step3 step3 .    ";
   }
 }
 
@@ -102,13 +102,15 @@
     border-radius: calc(0.25rem + 0.25vw);
     height: calc(2rem + 1vw);
     font-size: calc(1rem + 0.5vw);
-    margin-bottom: calc(1rem + 0.25vw);
     padding: 0 calc(0.25rem + 0.25vw);
-    width: 80%;
+    width: calc(100% - calc(2rem + 2vw));
     &:focus {
       border: 2px solid $secondary-color;
       box-shadow: none;
       outline: none;
+    }
+    &:not(.last) {
+      margin-bottom: calc(1rem + 0.25vw);
     }
   }
 }
@@ -132,4 +134,7 @@
 .step-3 {
   grid-area: step3;
   @extend %steps;
+  & .step-3-instructions {
+    text-align: center;
+  }
 }
