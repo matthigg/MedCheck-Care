@@ -12,6 +12,8 @@ import { Observable } from 'rxjs';
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
   rxNormResponses: string[] = [];
+  diInteractions: string[] = [];
+  diMedications: {} = {};
 
   // Define the form model. Users can change this model by adding or removing 
   // fields from the form.
@@ -61,7 +63,7 @@ export class DrugInteractionsComponent implements OnInit {
     // Clear previous results.
     this.rxNormResponses = [];
 
-    // ---------- NIH RxNorm API ----------
+    // ---------- NIH RxNorm API - Get RxCUI Numbers ----------
 
     // Send user-submitted medications to the NIH RxNorm API using the 
     // nihRxnormAPIService service, which returns an array of objects containing
@@ -77,7 +79,7 @@ export class DrugInteractionsComponent implements OnInit {
       });
     });
 
-    // ---------- NIH Drug Interactions API ----------
+    // ---------- NIH Drug Interactions API - Get Drug Interactions ----------
 
     // Store the RxCUI numbers from the "next" response in the rxNormResponses[]
     // array, unsubscribe from the rxNormSubscription, and initiate NIH Drug
@@ -109,42 +111,62 @@ export class DrugInteractionsComponent implements OnInit {
       }
     }
 
-    // ---------- NIH Drug Interactions API Results ----------
+    // ---------- NIH Drug Interactions API - Parse Results ----------
 
     // Handle results from NIH Drug Interactions API request.
     interface DiResult {
       interaction: string, 
-      meds: {name: string, genericName: string, url: string}[],
+      meds: {
+        minConceptItem: string, 
+        sourceConceptItem: string, 
+        url: string,
+      }[],
     }
     const nextDiResponse = (res, di$Subscription) => {
       const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
-        const diResult: DiResult = {
-          interaction: null,
-          meds: []
-        }
         res
           .fullInteractionTypeGroup.forEach(itg => {
             itg.fullInteractionType.forEach(it => {
               it.interactionPair.forEach(ip => {
+                const diResult: DiResult = {
+                  interaction: null,
+                  meds: []
+                }
                 diResult.interaction = ip.description
                 ip.interactionConcept.forEach(ic => {
                   diResult.meds.push({
-                    name: ic.minConceptItem.name,
-                    genericName: ic.sourceConceptItem.name,
+                    minConceptItem: ic.minConceptItem.name,
+                    sourceConceptItem: ic.sourceConceptItem.name,
                     url: ic.sourceConceptItem.url,
                   });
                 });
+                diResults.push(diResult);
               });
             });
           });
-        diResults.push(diResult);
-        console.log('=== NIH Drug Interaction API RESULTS:', diResults);
+        console.log('NIH Drug Interaction API RESULTS:', diResults);
+        displayDiResults(diResults);
       } else {
-        console.log('=== NIH Drug Interaction API RESULTS: No interactions to report.');
+        console.log('NIH Drug Interaction API RESULTS: No interactions to report.');
       }
       di$Subscription.unsubscribe();
     }
+
+    // ---------- NIH Drug Interactions API - Display Results ----------
+
+    const displayDiResults = (diResults) => {
+      diResults.forEach(result => {
+        this.diInteractions.push(result.interaction);
+        result.meds.forEach(med => {
+          this.diMedications[med.minConceptItem] = [];
+          if (med.minConceptItem !== med.sourceConceptItem) {
+            this.diMedications[med.minConceptItem].push(med.sourceConceptItem);
+          }
+        });
+      });
+    }
+
   }
 }
 

@@ -45,6 +45,20 @@
   <div class="step-3">
     <h3>Step 3</h3>
     <p>View, print, or save your results to your device. Saved results are in .pdf format.</p>
+    
+    <h4>Medications:</h4>
+    <ul>
+      <li *ngFor="let med of diMedications | keyvalue">
+        {{ med.key }} <span *ngIf="med.value.length !== 0">({{ med.value }})</span>
+      </li>
+    </ul>
+    
+    <h4>Drug Interactions:</h4>
+    <ul>
+      <li *ngFor="let interaction of diInteractions">
+        {{ interaction }}
+      </li>
+    </ul>
   </div>
 
 </div>
