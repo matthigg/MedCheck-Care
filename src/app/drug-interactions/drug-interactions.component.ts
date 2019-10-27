@@ -12,8 +12,10 @@ import { Observable } from 'rxjs';
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
   rxNormResponses: string[] = [];
+  diDisclaimer: string;
   diInteractions: string[] = [];
   diMedications: {} = {};
+  diUserInput: string[] = [];
 
   // Define the form model. Users can change this model by adding or removing 
   // fields from the form.
@@ -123,11 +125,16 @@ export class DrugInteractionsComponent implements OnInit {
       }[],
     }
     const nextDiResponse = (res, di$Subscription) => {
+      console.log('=== res:', res);
       const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
+        this.diDisclaimer = 'National Library of Medicine (NLM): ' + res.nlmDisclaimer;
         res
           .fullInteractionTypeGroup.forEach(itg => {
             itg.fullInteractionType.forEach(it => {
+              it.minConcept.forEach(mc => {
+                this.diUserInput.push(mc);
+              })
               it.interactionPair.forEach(ip => {
                 const diResult: DiResult = {
                   interaction: null,
@@ -159,12 +166,19 @@ export class DrugInteractionsComponent implements OnInit {
       diResults.forEach(result => {
         this.diInteractions.push(result.interaction);
         result.meds.forEach(med => {
+          med.minConceptItem = medCapitalize(med.minConceptItem);
+          med.sourceConceptItem = medCapitalize(med.sourceConceptItem);
           this.diMedications[med.minConceptItem] = [];
           if (med.minConceptItem !== med.sourceConceptItem) {
             this.diMedications[med.minConceptItem].push(med.sourceConceptItem);
           }
         });
       });
+    }
+
+    // Capitalize medication names for formatting & easy comparison
+    const medCapitalize = (med: string) => {
+      return med[0].toUpperCase() + med.slice(1).toLowerCase();
     }
 
   }

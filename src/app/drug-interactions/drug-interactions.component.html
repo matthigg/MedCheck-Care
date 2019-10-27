@@ -45,7 +45,8 @@
   <div class="step-3">
     <h3>Step 3</h3>
     <p>View, print, or save your results to your device. Saved results are in .pdf format.</p>
-    
+    <h4>Disclaimer:</h4>
+    <p>{{ diDisclaimer}}</p>
     <h4>Medications:</h4>
     <ul>
       <li *ngFor="let med of diMedications | keyvalue">
@@ -59,6 +60,15 @@
         {{ interaction }}
       </li>
     </ul>
+
+    <div class="copy-nlm-disclaimer">
+      <p>
+        "This product uses publicly available data from the U.S. National 
+        Library of Medicine (NLM), National Institutes of Health, Department of 
+        Health and Human Services; NLM is not responsible for the product and does 
+        not endorse or recommend this or any other product."
+      </p>
+    </div>
   </div>
 
 </div>
