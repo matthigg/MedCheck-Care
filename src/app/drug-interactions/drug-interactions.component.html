@@ -6,6 +6,9 @@
       identify possible interactions between prescription medications, 
       over-the-counter (OTC) medications, and herbal supplements. 
     </p>
+    <p>
+      Follow Steps 1, 2, and 3 below to get started.
+    </p>
   </div>
 
   <div class="copy-disclaimer">
@@ -35,7 +38,7 @@
         <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Another Medication</button>
         <label *ngFor="let field of meds.controls; let i=index; last as isLast">
           <input type="text" [formControlName]="i" [ngClass]="{ 'last': isLast }">
-          <button class="btn-delete" type="button" (click)="medFormDeleteField(i)">x</button>
+          <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteField(i)">x</button>
         </label>
       </div>
     </form>
@@ -55,34 +58,33 @@
 
   <div class="step-3">
     <h3>Step 3</h3>
-    <p class="step-3-instructions">View, print, or save your results to your device. Saved results are in .pdf format.</p>
-    <h4>Medications (Generic):</h4>
-    <span *ngFor="let medUserInput of diUserInput">
-      {{ medUserInput.name }}
-    </span>
-    <ul>
-      <li *ngFor="let med of diMedications | keyvalue">
-        {{ med.key }} <span *ngIf="med.value.length !== 0">({{ med.value }})</span>
-      </li>
-    </ul>
-    
-    <h4>Drug Interactions:</h4>
-    <ul>
-      <li *ngFor="let interaction of diInteractions">
-        {{ interaction }}
-      </li>
-    </ul>
-
-    <div class="copy-nlm-disclaimer">
-      <h4>Disclaimer:</h4>
-      <p>
-        This product uses publicly available data from the U.S. National 
-        Library of Medicine (NLM), National Institutes of Health, Department of 
-        Health and Human Services; NLM is not responsible for the product and does 
-        not endorse or recommend this or any other product.
-      </p>
-      <p>{{ diDisclaimer}}</p>
+    <p>View, print, or save your results to your device. Results are saved in .pdf format.</p>
+    <div class="step-3-results">
+      <h4>Medications (Generic):</h4>
+      <span *ngFor="let medUserInput of diUserInput">
+        {{ medUserInput.name }}
+      </span>
+      <ul>
+        <li *ngFor="let med of diMedications | keyvalue">
+          {{ med.key }} <span *ngIf="med.value.length !== 0">({{ med.value }})</span>
+        </li>
+      </ul>
+      <h4>Drug Interactions:</h4>
+      <ul>
+        <li *ngFor="let interaction of diInteractions">
+          {{ interaction }}
+        </li>
+      </ul>
+      <div class="copy-nlm-disclaimer">
+        <h4>Disclaimer:</h4>
+        <p>
+          This product uses publicly available data from the U.S. National 
+          Library of Medicine (NLM), National Institutes of Health, Department of 
+          Health and Human Services; NLM is not responsible for the product and does 
+          not endorse or recommend this or any other product.
+        </p>
+        <p>{{ diDisclaimer}}</p>
+      </div>
     </div>
   </div>
-
 </div>
