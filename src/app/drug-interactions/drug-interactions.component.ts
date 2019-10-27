@@ -170,7 +170,7 @@ export class DrugInteractionsComponent implements OnInit {
 
     const displayDiResults = (diResults) => {
       diResults.forEach(result => {
-        this.diInteractions.add(`${result.interaction} Notes: ${result.comment}`);
+        this.diInteractions.add(result.interaction);
         result.meds.forEach(med => {
           med.minConceptItem = medCapitalize(med.minConceptItem);
           med.sourceConceptItem = medCapitalize(med.sourceConceptItem);
