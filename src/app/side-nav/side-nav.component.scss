@@ -1,13 +1,18 @@
 
 @import '../../colors';
 
-$logo-size: calc(1rem + 1vw);
+$logo-size: calc(1rem + 0.75vw);
 
 .mat-sidenav-container {
   height: 100%;
   & .mat-sidenav {            // Sidenav/Drawer Component
     min-width: min-content;
-    width: 300px;
+    width: 280px;
+    & .mat-nav-list {
+      & a {
+        font-size: calc(1rem + 0.125vw);
+      }
+    }
     & .mat-toolbar {          // Sidenav/Drawer Component Header  
       background: inherit;
       justify-content: center;

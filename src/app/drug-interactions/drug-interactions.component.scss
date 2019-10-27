@@ -66,6 +66,7 @@
 }
 
 %steps {
+  font-size: calc(1rem + 0.125vw);
   & h3 {
     color: $primary-color;
     text-align: center;
@@ -99,7 +100,8 @@
   & input {
     border: 2px solid $tertiary-color;
     border-radius: calc(0.25rem + 0.25vw);
-    height: calc(1.5rem + 0.5vw);
+    height: calc(2rem + 1vw);
+    font-size: calc(1rem + 0.5vw);
     margin-bottom: calc(1rem + 0.25vw);
     padding: 0 calc(0.25rem + 0.25vw);
     width: 80%;
