@@ -22,12 +22,13 @@
   <div class="step-1">
     <h3>Step 1</h3>
     <p>
-      Type in the names of prescription medications, OTC medications, and/or
-      herbal supplements that you want to check for interactions. 
+      Use the fields below to type in the names of prescription medications, OTC 
+      medications, and/or herbal supplements that you want to check for 
+      interactions. 
     </p>
     <p>
       Click the "+Add Another Medication" button if you want to check additional 
-      medications for drug interactions, otherwise proceed to Step 2.
+      medications, otherwise proceed to step 2.
     </p>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">

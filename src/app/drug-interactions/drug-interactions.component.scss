@@ -43,20 +43,11 @@
     grid-template-areas:
     "intro intro discl discl"
     "step1 step1 step2 step2"
-    ". step3 step3 .";
+    "step3 step3 step3 step3";
   }
 }
 
-@media (min-width: 768px) {
-  .grid-container {
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-areas:
-      "intro intro intro discl discl discl"
-      "step1 step1 step2 step2 step3 step3";
-  }
-}
-
-// ---------- STEP 1, 2, & 3 --------------------------------------------------
+// ---------- STEPS 1, 2, & 3 --------------------------------------------------
 
 %btn {
   background-color: $primary-color;
@@ -88,7 +79,7 @@
     border-radius: calc(0.25rem + 0.25vw);
     display: block;
     height: calc(1.5rem + 1vw);
-    margin: 0 auto;
+    margin: 0 auto calc(1rem + 1vw) auto;
     padding: 0 calc(0.5rem + 0.5vw);
     @extend %btn;
     &:hover {
