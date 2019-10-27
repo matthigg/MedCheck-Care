@@ -21,6 +21,7 @@ export class NihRxnormApiService {
         });
       }
     });
+    console.log('=== rxNormObservables:', rxNormObservables);
     return rxNormObservables;
   }
 

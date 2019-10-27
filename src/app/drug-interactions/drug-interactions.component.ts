@@ -11,11 +11,11 @@ import { Observable } from 'rxjs';
 })
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
-  rxNormResponses: string[] = [];
   diDisclaimer: string;
-  diInteractions: string[] = [];
+  diInteractions: Set<[]> = new Set([]);
   diMedications: {} = {};
-  diUserInput: string[] = [];
+  diUserInput: Set<[]> = new Set([]);
+  rxNormResponses: string[] = [];
 
   // Define the form model. Users can change this model by adding or removing 
   // fields from the form.
@@ -63,6 +63,10 @@ export class DrugInteractionsComponent implements OnInit {
   onSubmit() {
 
     // Clear previous results.
+    this.diDisclaimer = '';
+    this.diInteractions.clear();
+    this.diMedications = {};
+    this.diUserInput.clear();
     this.rxNormResponses = [];
 
     // ---------- NIH RxNorm API - Get RxCUI Numbers ----------
@@ -128,14 +132,14 @@ export class DrugInteractionsComponent implements OnInit {
       console.log('=== res:', res);
       const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
-        this.diDisclaimer = 'National Library of Medicine (NLM): ' + res.nlmDisclaimer;
+        this.diDisclaimer = res.nlmDisclaimer;
         res
-          .fullInteractionTypeGroup.forEach(itg => {
-            itg.fullInteractionType.forEach(it => {
-              it.minConcept.forEach(mc => {
-                this.diUserInput.push(mc);
+          .fullInteractionTypeGroup.forEach(fitg => {
+            fitg.fullInteractionType.forEach(fit => {
+              fit.minConcept.forEach(mc => {
+                this.diUserInput.add(mc.name)
               })
-              it.interactionPair.forEach(ip => {
+              fit.interactionPair.forEach(ip => {
                 const diResult: DiResult = {
                   interaction: null,
                   meds: []
@@ -164,7 +168,9 @@ export class DrugInteractionsComponent implements OnInit {
 
     const displayDiResults = (diResults) => {
       diResults.forEach(result => {
-        this.diInteractions.push(result.interaction);
+
+        this.diInteractions.add(result.interaction);
+
         result.meds.forEach(med => {
           med.minConceptItem = medCapitalize(med.minConceptItem);
           med.sourceConceptItem = medCapitalize(med.sourceConceptItem);
