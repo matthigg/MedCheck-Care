@@ -35,7 +35,7 @@
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">
         <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Another Medication</button>
-        <label *ngFor="let field of meds.controls; let i=index; last as isLast">
+        <label *ngFor="let field of meds.controls; let i = index; last as isLast">
           <input type="text" [formControlName]="i" [ngClass]="{ 'last': isLast }">
           <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteField(i)">x</button>
         </label>
@@ -63,6 +63,13 @@
   <!-- Step 3 -->
   <div class="step-3">
     <h3>Step 3</h3>
+    <div *ngIf="step3ResultsStatus === 'pending' || step3ResultsStatus === 'noResults' || step3ResultsStatus === 'received'">
+      Drug interaction search results for:
+      <span *ngFor="let userinput of diUserInput; last as isLast">
+        <span>"{{ userinput }}"</span>
+        <span [ngClass]="{ 'last': isLast }">, </span>
+      </span> 
+    </div>
     <div *ngIf="step3ResultsStatus === 'idle'">
       <p>
         If any drug interactions are found for the medications entered in Step 1 

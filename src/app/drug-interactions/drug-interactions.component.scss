@@ -149,4 +149,7 @@
   & h4 {
     color: $primary-color;
   }
+  & span.last {
+    display: none;
+  }
 }

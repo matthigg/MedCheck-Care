@@ -14,7 +14,7 @@ export class DrugInteractionsComponent implements OnInit {
   diDisclaimer: string;
   diInteractions: Set<string> = new Set();
   diMedications: {} = {};
-  // diUserInput: Set<string> = new Set();
+  diUserInput: Set<string> = new Set();
   rxNormResponses: string[] = [];
 
   // This variable determines what to display in the template under "Step 3":
@@ -81,8 +81,13 @@ export class DrugInteractionsComponent implements OnInit {
     this.diDisclaimer = '';
     this.diInteractions.clear();
     this.diMedications = {};
-    // this.diUserInput.clear();
+    this.diUserInput.clear();
     this.rxNormResponses = [];
+
+    // Capture user input from the drug interactions form in Step 1.
+    this.medGroup.value.meds.forEach(med => {
+      if (med) { this.diUserInput.add(med); }
+    })
 
     // ---------- NIH RxNorm API - Get RxCUI Numbers ----------
 
@@ -108,7 +113,7 @@ export class DrugInteractionsComponent implements OnInit {
     // been received.
     const nextRxNormResponse = (res: {idGroup: {rxnormId}}, med, rxNorm$Subscription) => {
       this.rxNormResponses.push(
-        (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : `No valid RxCUI number found for "${med}".` })() 
+        (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : `No valid RxCUI number found for '${med}'.` })() 
       );
       rxNorm$Subscription.unsubscribe()
 
@@ -151,9 +156,6 @@ export class DrugInteractionsComponent implements OnInit {
         res
           .fullInteractionTypeGroup.forEach(fitg => {
             fitg.fullInteractionType.forEach(fit => {
-              // fit.minConcept.forEach(mc => {
-              //   this.diUserInput.add(mc.name)
-              // })
               fit.interactionPair.forEach(ip => {
                 const diResult: DiResult = {
                   interaction: null,
