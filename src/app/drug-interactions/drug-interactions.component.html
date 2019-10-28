@@ -32,10 +32,6 @@
       over-the-counter (OTC) medications, and/or herbal supplements that you want 
       to check for interactions. 
     </p>
-    <p>
-      Click the "+Add Another Medication" button if you want to check additional 
-      medications, otherwise proceed to Step 2.
-    </p>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">
         <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Another Medication</button>
@@ -45,6 +41,10 @@
         </label>
       </div>
     </form>
+    <p>
+      Click the "+Add Another Medication" button if you want to check additional 
+      medications, otherwise proceed to Step 2 after you have finished.
+    </p>
   </div>
 
   <!-- Step 2 -->
@@ -54,10 +54,10 @@
       Click the button below after you have entered all of the medications that 
       you want to check. The results will be displayed under Step 3.
     </p>
+    <button class="btn-view-results" type="submit" form="medForm" [disabled]="!medGroup.valid">Check for Interactions</button>
     <p>
       Note: brand name drugs are converted to their generic equivalents.
     </p>
-    <button class="btn-view-results" type="submit" form="medForm" [disabled]="!medGroup.valid">Check for Interactions</button>
   </div>
 
   <!-- Step 3 -->
