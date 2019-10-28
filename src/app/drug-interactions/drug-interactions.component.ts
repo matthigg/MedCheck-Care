@@ -3,7 +3,6 @@ import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { NihApproximateMatchApiService } from '../nih-approximate-match-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
 import { NihRxcuiApiService } from '../nih-rxcui-api.service';
-import { NihRxnormApiService } from '../nih-rxnorm-api.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -50,16 +49,10 @@ export class DrugInteractionsComponent implements OnInit {
     private nihApproximateMatchApiService: NihApproximateMatchApiService,
     private nihDiApiService: NihDiApiService,
     private nihRxcuiApiService: NihRxcuiApiService,
-    private nihRxnormApiService: NihRxnormApiService,
   ) { }
 
   ngOnInit() {
     this.emitPageTitle();
-    console.log(this.nihApproximateMatchApiService);
-    console.log(this.nihRxnormApiService)
-    console.log(this.nihRxcuiApiService)
-    console.log(this.nihRxnormApiService.fetchRxNormApi)
-    console.log(this.nihRxcuiApiService.fetchRxCUIApi)
   }
 
   // Add a medication input field.
@@ -82,10 +75,6 @@ export class DrugInteractionsComponent implements OnInit {
   // Get NIH drug interaction API results.
   onSubmit() {
 
-    // Set status to 'pending' in order to reflect the current status under Step
-    // 3 in the template.
-    this.step3ResultsStatus = 'pending';
-
     // Clear previous results.
     this.diDisclaimer = '';
     this.diInteractions.clear();
@@ -93,10 +82,20 @@ export class DrugInteractionsComponent implements OnInit {
     this.diUserInput.clear();
     this.rxCUIResponses = [];
 
-    // Capture user input from the drug interactions form in Step 1.
+    // Capture user input from the drug interactions form in Step 1. If there is
+    // no user input, ie. all fields are empty, then return.
+    let userInputIsEmpty = true;
     this.medGroup.value.meds.forEach(med => {
-      if (med) { this.diUserInput.add(med); }
+      if (med) { 
+        this.diUserInput.add(med); 
+        userInputIsEmpty = false;
+      }
     })
+    if (userInputIsEmpty === true) { return; }
+
+    // Set status to 'pending' in order to reflect the current status under Step
+    // 3 in the template.
+    this.step3ResultsStatus = 'pending';
 
     // ---------- NIH RxCUI API - Get RxCUI Numbers ----------
 
