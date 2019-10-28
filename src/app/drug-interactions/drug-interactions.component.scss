@@ -67,9 +67,13 @@
 }
 
 %steps {
+  border: 2px solid $tertiary-color;
+  border-radius: calc(0.5rem + 0.5vw);
   font-size: calc(1rem + 0.125vw);
+  padding: calc(1rem + 1vw);
   & h3 {
     color: $primary-color;
+    margin-top: 0;
     text-align: center;
   }
 }
