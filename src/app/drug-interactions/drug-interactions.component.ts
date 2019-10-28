@@ -11,6 +11,9 @@ import { Observable } from 'rxjs';
   styleUrls: ['./drug-interactions.component.scss']
 })
 export class DrugInteractionsComponent implements OnInit {
+
+  // ---------- Class Variable Declarations ------------------------------------
+
   @Output() pageTitle = new EventEmitter<string>();
   diDisclaimer: string;
   diError: string;
@@ -28,6 +31,8 @@ export class DrugInteractionsComponent implements OnInit {
   //                request timed out
   // 'received'   - a response from the NIH Drug Interactions API has been received 
   //                and the results can be displayed under "Step 3"
+  // 'error'      - there was an error with either the NIH RxCUI or Drug 
+  //                Interactions API
   step3ResultsStatus: string = 'idle';
 
   // Define the form model. Users can change this model by adding or removing 
@@ -45,7 +50,7 @@ export class DrugInteractionsComponent implements OnInit {
   // Declare an Angular Form Group.
   medGroup: FormGroup = this.formBuilder.group(this.medFormFields);
 
-  // ---------- Constructor & Lifecycle Hooks ----------
+  // ---------- Constructor & Lifecycle Hooks ----------------------------------
 
   constructor (
     private formBuilder: FormBuilder, 
@@ -58,7 +63,7 @@ export class DrugInteractionsComponent implements OnInit {
     this.emitPageTitle();
   }
 
-  // ---------- Class Methods ----------
+  // ---------- Class Methods --------------------------------------------------
 
   // Since the title/header for each view in this website is embedded in the 
   // parent side-nav component, we are emitting each child view's title via 
@@ -77,11 +82,24 @@ export class DrugInteractionsComponent implements OnInit {
     this.meds.removeAt(medIndex)
   }
 
-  medInputKeyUp() {
-    console.log('=== keyup')
+  // ---------- NIH APIs -------------------------------------------------------
+
+  // Get NIH Approximate Match API typeahead suggestions.
+  medInputKeyUp(event: KeyboardEvent) {
+    const approxMatch$: Observable<object> = this.nihApproximateMatchApiService.fetchApproxMatchAPI(event)
+    const approxMatch$Subscription = approxMatch$.subscribe({
+      next: res => nextApproxMatchResponse(res, approxMatch$Subscription),
+      error: err => console.log(err),
+      complete: () => console.log('Complete'),
+    });
+
+    const nextApproxMatchResponse = (res, approxMatch$Subscription) => {
+      console.log('=== res:', res);
+      approxMatch$Subscription.unsubscribe()
+    }
   }
 
-  // Get NIH drug interaction API results.
+  // Get NIH Drug Interaction API results.
   onSubmit() {
 
     // Clear previous results.
@@ -100,18 +118,21 @@ export class DrugInteractionsComponent implements OnInit {
         userInputIsEmpty = false;
       }
     })
-    if (userInputIsEmpty === true) { return; }
+    if (userInputIsEmpty === true) { 
+      this.step3ResultsStatus = 'idle';
+      return; 
+    }
 
     // Set status to 'pending' in order to reflect the current status under Step
     // 3 in the template.
     this.step3ResultsStatus = 'pending';
 
-    // ---------- NIH RxCUI API - Get RxCUI Numbers ----------
+    // ---------- NIH RxCUI API - Get RxCUI Numbers ----------------------------
 
     // Send user-submitted medications to the NIH RxCUI API using the 
     // nihRxcuiAPIService service, which returns an array of objects containing
     // observables that can receive RxCUI numbers.
-    const rxCUIObservables: {med: string, observable: Observable<object>}[] = this.nihRxcuiApiService.fetchRxCUIApi(this.medGroup.value.meds);
+    const rxCUIObservables: {med: string, observable: Observable<object>}[] = this.nihRxcuiApiService.fetchRxCUIAPI(this.medGroup.value.meds);
     rxCUIObservables.forEach(rxCUIObservable => {
 
       // Subscribe to each rxCUI observable in order to retrieve RxCUI numbers.
@@ -128,7 +149,7 @@ export class DrugInteractionsComponent implements OnInit {
       });
     });
 
-    // ---------- NIH Drug Interactions API - Get Drug Interactions ----------
+    // ---------- NIH Drug Interactions API - Get Drug Interactions ------------
 
     // Store the RxCUI numbers from the "next" response in the rxCUIResponses[]
     // array, unsubscribe from the rxCUISubscription, and initiate NIH Drug
@@ -151,7 +172,7 @@ export class DrugInteractionsComponent implements OnInit {
       // which returns a single observable. 
       } else {
         console.log('NIH RxCUI API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxCUIResponses);
-        const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxCUIResponses);
+        const di$: Observable<object> = this.nihDiApiService.fetchDiAPI(this.rxCUIResponses);
         const di$Subscription = di$.subscribe({
           next: res => nextDiResponse(res, di$Subscription),
           error: err => {
@@ -166,7 +187,7 @@ export class DrugInteractionsComponent implements OnInit {
       }
     }
 
-    // ---------- NIH Drug Interactions API - Parse Results ----------
+    // ---------- NIH Drug Interactions API - Parse Results --------------------
 
     // Handle results from NIH Drug Interactions API request.
     interface DiResult {
@@ -212,7 +233,7 @@ export class DrugInteractionsComponent implements OnInit {
       di$Subscription.unsubscribe();
     }
 
-    // ---------- NIH Drug Interactions API - Display Results ----------
+    // ---------- NIH Drug Interactions API - Display Results ------------------
 
     // Update template variables in order to display drug interaction results.
     const displayDiResults = (diResults) => {
