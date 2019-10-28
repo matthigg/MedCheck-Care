@@ -89,8 +89,12 @@ export class DrugInteractionsComponent implements OnInit {
     const approxMatch$: Observable<object> = this.nihApproximateMatchApiService.fetchApproxMatchAPI(event)
     const approxMatch$Subscription = approxMatch$.subscribe({
       next: res => nextApproxMatchResponse(res, approxMatch$Subscription),
-      error: err => console.log(err),
-      complete: () => console.log('Complete'),
+      error: err => { 
+        console.log('NIH Approximate Match API - Error:', err);
+      },
+      complete: () => { 
+        console.log('NIH Approximate Match API - Complete.');
+      },
     });
 
     const nextApproxMatchResponse = (res, approxMatch$Subscription) => {
