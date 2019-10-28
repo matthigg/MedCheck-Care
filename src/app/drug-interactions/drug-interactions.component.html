@@ -77,11 +77,13 @@
     </div>
     <div *ngIf="step3ResultsStatus === 'noResults'">
       <p>
-        No drug interactions/timeout
+        Either no drug interactions were found, or the connection timed out. 
+        This application is a work in progress. Consult another resource or a 
+        healthcare provider for further questions.
       </p>
     </div>
     <div *ngIf="step3ResultsStatus === 'received'">
-      <p>View, print, or save your results to your device. Results are saved in .pdf format.</p>
+      <p>Coming Soon: view, print, or save your results to your device. Results are saved in .pdf format.</p>
       <h4>Medications (Generic):</h4>
       <ul>
         <li *ngFor="let med of diMedications | keyvalue">
