@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 export class DrugInteractionsComponent implements OnInit {
   @Output() pageTitle = new EventEmitter<string>();
   diDisclaimer: string;
+  diError: string;
   diInteractions: Set<string> = new Set();
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
@@ -44,6 +45,8 @@ export class DrugInteractionsComponent implements OnInit {
   // Declare an Angular Form Group.
   medGroup: FormGroup = this.formBuilder.group(this.medFormFields);
 
+  // ---------- Constructor & Lifecycle Hooks ----------
+
   constructor (
     private formBuilder: FormBuilder, 
     private nihApproximateMatchApiService: NihApproximateMatchApiService,
@@ -53,6 +56,15 @@ export class DrugInteractionsComponent implements OnInit {
 
   ngOnInit() {
     this.emitPageTitle();
+  }
+
+  // ---------- Class Methods ----------
+
+  // Since the title/header for each view in this website is embedded in the 
+  // parent side-nav component, we are emitting each child view's title via 
+  // child --> parent data flow.
+  emitPageTitle(): void {
+    this.pageTitle.emit('Drug Interactions');
   }
 
   // Add a medication input field.
@@ -65,11 +77,8 @@ export class DrugInteractionsComponent implements OnInit {
     this.meds.removeAt(medIndex)
   }
 
-  // Since the title/header for each view in this website is embedded in the 
-  // parent side-nav component, we are emitting each child view's title via 
-  // child --> parent data flow.
-  emitPageTitle(): void {
-    this.pageTitle.emit('Drug Interactions');
+  medInputKeyUp() {
+    console.log('=== keyup')
   }
 
   // Get NIH drug interaction API results.
@@ -108,8 +117,14 @@ export class DrugInteractionsComponent implements OnInit {
       // Subscribe to each rxCUI observable in order to retrieve RxCUI numbers.
       const rxCUI$Subscription = rxCUIObservable.observable.subscribe({
         next: (res: {idGroup: {rxnormId}}) => nextRxCUIResponse(res, rxCUIObservable.med, rxCUI$Subscription),
-        error: err => console.log('NIH RxCUI API - Error:', err),
-        complete: () => console.log('NIH RxCUI API - Complete.'),
+        error: err => { 
+          console.log('NIH RxCUI API - Error:', err);
+          this.diError = err;
+          this.step3ResultsStatus = 'error';
+        },
+        complete: () => { 
+          console.log('NIH RxCUI API - Complete.');
+        },
       });
     });
 
@@ -139,8 +154,14 @@ export class DrugInteractionsComponent implements OnInit {
         const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxCUIResponses);
         const di$Subscription = di$.subscribe({
           next: res => nextDiResponse(res, di$Subscription),
-          error: err => console.log('NIH Drug Interactions API - Error:', err),
-          complete: () => console.log('NIH Drug Interactions API - Complete.'),
+          error: err => {
+            console.log('NIH Drug Interactions API - Error:', err);
+            this.diError = err;
+            this.step3ResultsStatus = 'error';
+          },
+          complete: () => {
+            console.log('NIH Drug Interactions API - Complete.');
+          },
         });
       }
     }

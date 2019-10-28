@@ -36,7 +36,7 @@
       <div formArrayName="meds">
         <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Another Medication</button>
         <label *ngFor="let field of meds.controls; let i = index; last as isLast">
-          <input type="text" [formControlName]="i" [ngClass]="{ 'last': isLast }">
+          <input type="text" [formControlName]="i" [ngClass]="{ 'last': isLast }" (keyup)="medInputKeyUp">
           <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteField(i)">x</button>
         </label>
       </div>
@@ -113,6 +113,11 @@
         </p>
         <p>{{ diDisclaimer}}</p>
       </div>
+    </div>
+    <div *ngIf="step3ResultsStatus === 'error'">
+      <p>
+        There was an error with the request: {{ diError }}
+      </p>
     </div>
   </div>
 </div>
