@@ -17,12 +17,15 @@ export class DrugInteractionsComponent implements OnInit {
   // diUserInput: Set<string> = new Set();
   rxNormResponses: string[] = [];
 
-  // This variable determines what to display in the template under "Step 3";
-  // 'idle' means no medications have been submitted to the NIH RxNorm API, 
-  // 'pending' means a request has been made to the NIH RxNorm API and this app
-  // is awaiting a final response from the NIH Drug Interactions API, and 
-  // 'received' means that a response from the NIH Drug Interactions API have
-  // been received and the results can be displayed under "Step 3". 
+  // This variable determines what to display in the template under "Step 3":
+  //
+  // 'idle'       - no medications have been submitted to the NIH RxNorm API
+  // 'pending'    - a request has been made to the NIH RxNorm API and we are now
+  //                awaiting a final response from the NIH Drug Interactions API
+  // 'noResults'  - means either A) no drug interactions were found, or B) the 
+  //                request timed out
+  // 'received'   - a response from the NIH Drug Interactions API has been received 
+  //                and the results can be displayed under "Step 3"
   step3ResultsStatus: string = 'idle';
 
   // Define the form model. Users can change this model by adding or removing 
@@ -173,6 +176,7 @@ export class DrugInteractionsComponent implements OnInit {
         displayDiResults(diResults);
       } else {
         console.log('NIH Drug Interaction API RESULTS: No interactions to report.');
+        this.step3ResultsStatus = 'noResults';
       }
       di$Subscription.unsubscribe();
     }

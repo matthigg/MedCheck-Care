@@ -75,6 +75,11 @@
         Results are pending...
       </p>
     </div>
+    <div *ngIf="step3ResultsStatus === 'noResults'">
+      <p>
+        No drug interactions/timeout
+      </p>
+    </div>
     <div *ngIf="step3ResultsStatus === 'received'">
       <p>View, print, or save your results to your device. Results are saved in .pdf format.</p>
       <h4>Medications (Generic):</h4>
