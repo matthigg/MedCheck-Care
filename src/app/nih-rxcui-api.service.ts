@@ -10,7 +10,7 @@ export class NihRxcuiApiService {
   constructor(private http: HttpClient) { }
 
   // Send a request to the NIH RxCUI API with the intention of retrieving RxCUI
-  // values for each medication name in a meds[] array.  jm   
+  // values for each medication name in a meds[] array.
   fetchRxCUIApi(meds: string[]): {med: string, observable: Observable<object>}[] {
     const rxCUIObservables: {med: string, observable: Observable<object>}[] = [];
     meds.forEach(med => {

@@ -1,6 +1,8 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { NihApproximateMatchApiService } from '../nih-approximate-match-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
+import { NihRxcuiApiService } from '../nih-rxcui-api.service';
 import { NihRxnormApiService } from '../nih-rxnorm-api.service';
 import { Observable } from 'rxjs';
 
@@ -15,12 +17,12 @@ export class DrugInteractionsComponent implements OnInit {
   diInteractions: Set<string> = new Set();
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
-  rxNormResponses: string[] = [];
+  rxCUIResponses: string[] = [];
 
   // This variable determines what to display in the template under "Step 3":
   //
-  // 'idle'       - no medications have been submitted to the NIH RxNorm API
-  // 'pending'    - a request has been made to the NIH RxNorm API and we are now
+  // 'idle'       - no medications have been submitted to the NIH RxCUI API
+  // 'pending'    - a request has been made to the NIH RxCUI API and we are now
   //                awaiting a final response from the NIH Drug Interactions API
   // 'noResults'  - means either A) no drug interactions were found, or B) the 
   //                request timed out
@@ -45,12 +47,19 @@ export class DrugInteractionsComponent implements OnInit {
 
   constructor (
     private formBuilder: FormBuilder, 
+    private nihApproximateMatchApiService: NihApproximateMatchApiService,
     private nihDiApiService: NihDiApiService,
+    private nihRxcuiApiService: NihRxcuiApiService,
     private nihRxnormApiService: NihRxnormApiService,
   ) { }
 
   ngOnInit() {
     this.emitPageTitle();
+    console.log(this.nihApproximateMatchApiService);
+    console.log(this.nihRxnormApiService)
+    console.log(this.nihRxcuiApiService)
+    console.log(this.nihRxnormApiService.fetchRxNormApi)
+    console.log(this.nihRxcuiApiService.fetchRxCUIApi)
   }
 
   // Add a medication input field.
@@ -82,53 +91,53 @@ export class DrugInteractionsComponent implements OnInit {
     this.diInteractions.clear();
     this.diMedications = {};
     this.diUserInput.clear();
-    this.rxNormResponses = [];
+    this.rxCUIResponses = [];
 
     // Capture user input from the drug interactions form in Step 1.
     this.medGroup.value.meds.forEach(med => {
       if (med) { this.diUserInput.add(med); }
     })
 
-    // ---------- NIH RxNorm API - Get RxCUI Numbers ----------
+    // ---------- NIH RxCUI API - Get RxCUI Numbers ----------
 
-    // Send user-submitted medications to the NIH RxNorm API using the 
-    // nihRxnormAPIService service, which returns an array of objects containing
+    // Send user-submitted medications to the NIH RxCUI API using the 
+    // nihRxcuiAPIService service, which returns an array of objects containing
     // observables that can receive RxCUI numbers.
-    const rxNormObservables: {med: string, observable: Observable<object>}[] = this.nihRxnormApiService.fetchRxNormApi(this.medGroup.value.meds);
-    rxNormObservables.forEach(rxNormObservable => {
+    const rxCUIObservables: {med: string, observable: Observable<object>}[] = this.nihRxcuiApiService.fetchRxCUIApi(this.medGroup.value.meds);
+    rxCUIObservables.forEach(rxCUIObservable => {
 
-      // Subscribe to each rxNorm observable in order to retrieve RxCUI numbers.
-      const rxNorm$Subscription = rxNormObservable.observable.subscribe({
-        next: (res: {idGroup: {rxnormId}}) => nextRxNormResponse(res, rxNormObservable.med, rxNorm$Subscription),
-        error: err => console.log('NIH RxNorm API - Error:', err),
-        complete: () => console.log('NIH RxNorm API - Complete.'),
+      // Subscribe to each rxCUI observable in order to retrieve RxCUI numbers.
+      const rxCUI$Subscription = rxCUIObservable.observable.subscribe({
+        next: (res: {idGroup: {rxnormId}}) => nextRxCUIResponse(res, rxCUIObservable.med, rxCUI$Subscription),
+        error: err => console.log('NIH RxCUI API - Error:', err),
+        complete: () => console.log('NIH RxCUI API - Complete.'),
       });
     });
 
     // ---------- NIH Drug Interactions API - Get Drug Interactions ----------
 
-    // Store the RxCUI numbers from the "next" response in the rxNormResponses[]
-    // array, unsubscribe from the rxNormSubscription, and initiate NIH Drug
-    // Interactions API request once all responses from the NIH RxNorm API have
+    // Store the RxCUI numbers from the "next" response in the rxCUIResponses[]
+    // array, unsubscribe from the rxCUISubscription, and initiate NIH Drug
+    // Interactions API request once all responses from the NIH RxCUI API have
     // been received.
-    const nextRxNormResponse = (res: {idGroup: {rxnormId}}, med, rxNorm$Subscription) => {
-      this.rxNormResponses.push(
+    const nextRxCUIResponse = (res: {idGroup: {rxnormId}}, med, rxCUI$Subscription) => {
+      this.rxCUIResponses.push(
         (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : `No valid RxCUI number found for '${med}'.` })() 
       );
-      rxNorm$Subscription.unsubscribe()
+      rxCUI$Subscription.unsubscribe()
 
-      // Awaiting responses/RxCUI numbers from the NIH RxNorm API for all 
+      // Awaiting responses/RxCUI numbers from the NIH RxCUI API for all 
       // user-submitted medications.
-      if (rxNormObservables.length !== this.rxNormResponses.length) {
-        console.log('NIH RxNorm API - Pending: Awaiting responses for all submitted medication requests.')
+      if (rxCUIObservables.length !== this.rxCUIResponses.length) {
+        console.log('NIH RxCUI API - Pending: Awaiting responses for all submitted medication requests.')
 
       // If all responses/RxCUI numbers for user-submitted medications have been 
-      // received from the NIH RxNorm API, then send an array of RxCUI numbers 
+      // received from the NIH RxCUI API, then send an array of RxCUI numbers 
       // to the NIH Drug Interactions API using the nihDiApiService service, 
       // which returns a single observable. 
       } else {
-        console.log('NIH RxNorm API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxNormResponses);
-        const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxNormResponses);
+        console.log('NIH RxCUI API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxCUIResponses);
+        const di$: Observable<object> = this.nihDiApiService.fetchDiApi(this.rxCUIResponses);
         const di$Subscription = di$.subscribe({
           next: res => nextDiResponse(res, di$Subscription),
           error: err => console.log('NIH Drug Interactions API - Error:', err),
