@@ -14,8 +14,16 @@ export class DrugInteractionsComponent implements OnInit {
   diDisclaimer: string;
   diInteractions: Set<string> = new Set();
   diMedications: {} = {};
-  diUserInput: Set<string> = new Set();
+  // diUserInput: Set<string> = new Set();
   rxNormResponses: string[] = [];
+
+  // This variable determines what to display in the template under "Step 3";
+  // 'idle' means no medications have been submitted to the NIH RxNorm API, 
+  // 'pending' means a request has been made to the NIH RxNorm API and this app
+  // is awaiting a final response from the NIH Drug Interactions API, and 
+  // 'received' means that a response from the NIH Drug Interactions API have
+  // been received and the results can be displayed under "Step 3". 
+  step3ResultsStatus: string = 'idle';
 
   // Define the form model. Users can change this model by adding or removing 
   // fields from the form.
@@ -62,11 +70,15 @@ export class DrugInteractionsComponent implements OnInit {
   // Get NIH drug interaction API results.
   onSubmit() {
 
+    // Set status to 'pending' in order to reflect the current status under Step
+    // 3 in the template.
+    this.step3ResultsStatus = 'pending';
+
     // Clear previous results.
     this.diDisclaimer = '';
     this.diInteractions.clear();
     this.diMedications = {};
-    this.diUserInput.clear();
+    // this.diUserInput.clear();
     this.rxNormResponses = [];
 
     // ---------- NIH RxNorm API - Get RxCUI Numbers ----------
@@ -130,16 +142,15 @@ export class DrugInteractionsComponent implements OnInit {
       }[],
     }
     const nextDiResponse = (res, di$Subscription) => {
-      console.log('=== res:', res);
       const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
         this.diDisclaimer = res.nlmDisclaimer;
         res
           .fullInteractionTypeGroup.forEach(fitg => {
             fitg.fullInteractionType.forEach(fit => {
-              fit.minConcept.forEach(mc => {
-                this.diUserInput.add(mc.name)
-              })
+              // fit.minConcept.forEach(mc => {
+              //   this.diUserInput.add(mc.name)
+              // })
               fit.interactionPair.forEach(ip => {
                 const diResult: DiResult = {
                   interaction: null,
@@ -168,6 +179,7 @@ export class DrugInteractionsComponent implements OnInit {
 
     // ---------- NIH Drug Interactions API - Display Results ----------
 
+    // Update template variables in order to display drug interaction results.
     const displayDiResults = (diResults) => {
       diResults.forEach(result => {
         this.diInteractions.add(result.interaction);
@@ -180,16 +192,18 @@ export class DrugInteractionsComponent implements OnInit {
           }
         });
       });
+
+      // Set status to 'received' in order to show the final results under Step 
+      // 3 in the template.
+      this.step3ResultsStatus = 'received';
     }
 
     // Capitalize medication names for formatting & easy comparison
     const medCapitalize = (med: string) => {
       return med[0].toUpperCase() + med.slice(1).toLowerCase();
     }
-
   }
 }
-
 
 // Drug interactions
 // object
@@ -198,7 +212,7 @@ export class DrugInteractionsComponent implements OnInit {
 //   .interactionPair
 //   .forEach(obj => console.log(obj.description))
 
-// Drug brand name, generic name, and URL
+// Drug names and URL
 // object
 //   .fullInteractionTypeGroup[0]
 //   .fullInteractionType[0]

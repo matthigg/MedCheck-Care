@@ -25,9 +25,9 @@
   <div class="step-1">
     <h3>Step 1</h3>
     <p>
-      Use the fields below to type in the names of prescription medications, OTC 
-      medications, and/or herbal supplements that you want to check for 
-      interactions. 
+      Use the fields below to type in the names of prescription medications, 
+      over-the-counter (OTC) medications, and/or herbal supplements that you want 
+      to check for interactions. 
     </p>
     <p>
       Click the "+Add Another Medication" button if you want to check additional 
@@ -58,12 +58,21 @@
 
   <div class="step-3">
     <h3>Step 3</h3>
-    <p>View, print, or save your results to your device. Results are saved in .pdf format.</p>
-    <div class="step-3-results">
+    <div *ngIf="step3ResultsStatus === 'idle'">
+      <p>
+        If any drug interactions are found for the medications entered in Step 1 
+        then they will be displayed here after clicking the "Check for 
+        Interactions" button in Step 2.
+      </p>
+    </div>
+    <div *ngIf="step3ResultsStatus === 'pending'">
+      <p>
+        Results are pending...
+      </p>
+    </div>
+    <div *ngIf="step3ResultsStatus === 'received'">
+      <p>View, print, or save your results to your device. Results are saved in .pdf format.</p>
       <h4>Medications (Generic):</h4>
-      <span *ngFor="let medUserInput of diUserInput">
-        {{ medUserInput.name }}
-      </span>
       <ul>
         <li *ngFor="let med of diMedications | keyvalue">
           {{ med.key }} <span *ngIf="med.value.length !== 0">({{ med.value }})</span>
