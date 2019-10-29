@@ -37,7 +37,7 @@
         <button class="btn-add-medication" type="button" (click)="medFormAddFormControl()">+Add Another Medication</button>
         <label *ngFor="let fc of meds.controls; let i = index; last as isLast">
           <input type="text" [formControlName]="i" [ngClass]="{ 'last': isLast }">
-          <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteFormControl(i, fc)">x</button>
+          <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteFormControl(i)">x</button>
         </label>
       </div>
     </form>

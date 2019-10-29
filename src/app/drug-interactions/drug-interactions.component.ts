@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NihApproximateMatchApiService } from '../nih-approximate-match-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
 import { NihRxcuiApiService } from '../nih-rxcui-api.service';
-import { Observable, Observer, Subscriber } from 'rxjs';
+import { Observable, Observer, Subscriber, Subscription } from 'rxjs';
 
 import { map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
@@ -25,6 +25,9 @@ export class DrugInteractionsComponent implements OnInit {
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
   rxCUIResponses: string[] = [];
+  private _fcSubscriptions = new Subscription(); 
+  private _rxCUISubscriptions = new Subscription();
+  private _diSubscriptions = new Subscription();
   
   // This variable determines what to display in the template under "Step 3":
   //
@@ -70,6 +73,12 @@ export class DrugInteractionsComponent implements OnInit {
     })
   }
 
+  ngOnDestroy() {
+    this._fcSubscriptions.unsubscribe();
+    this._rxCUISubscriptions.unsubscribe();
+    this._diSubscriptions.unsubscribe();
+  }
+
   // ---------- Class Methods --------------------------------------------------
 
   // Since the title/header for each view in this website is embedded in the 
@@ -87,14 +96,13 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   // Delete a medication input field.
-  medFormDeleteFormControl(index: number, fc: FormControl): void {
-    (<EventEmitter<any>>fc.valueChanges).observers.forEach((obs: Subscriber<any>) => obs.unsubscribe());
+  medFormDeleteFormControl(index: number): void {
     this.meds.removeAt(index);
   }
 
   // ---------- NIH APIs -------------------------------------------------------
 
-  // 
+  // Get NIH Approximate Match API typeahead suggestions.
   fcSubscribe(fc$) {
     const fcDebounced$ = fc$.pipe(
       debounceTime(1000),
@@ -106,6 +114,10 @@ export class DrugInteractionsComponent implements OnInit {
       complete: () => console.log('NIH Approximate Match API - Complete.'),
     });
 
+    // Keep track of all new Form Control valueChanged subscribers
+    this._fcSubscriptions.add(fcDebounced$Subscriber);
+
+    // Make NIH Approximate Match API request.
     const nextApproxMatchResponse = (res) => {
       console.log('NIH Approximate Match API - Response:', res);
     }
@@ -155,10 +167,9 @@ export class DrugInteractionsComponent implements OnInit {
           this.diError = err;
           this.step3ResultsStatus = 'error';
         },
-        complete: () => { 
-          console.log('NIH RxCUI API - Complete.');
-        },
+        complete: () => console.log('NIH RxCUI API - Complete.'),
       });
+      this._rxCUISubscriptions.add(rxCUI$Subscriber)
     });
 
     // ---------- NIH Drug Interactions API - Get Drug Interactions ------------
@@ -192,10 +203,9 @@ export class DrugInteractionsComponent implements OnInit {
             this.diError = err;
             this.step3ResultsStatus = 'error';
           },
-          complete: () => {
-            console.log('NIH Drug Interactions API - Complete.');
-          },
+          complete: () => console.log('NIH Drug Interactions API - Complete.'),
         });
+        this._diSubscriptions.add(di$Subscriber);
       }
     }
 
