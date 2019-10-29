@@ -6,6 +6,7 @@ import { ContactComponent } from './contact/contact.component';
 import { DrugInteractionsComponent } from './drug-interactions/drug-interactions.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'drug-interactions', pathMatch: 'full' },
   { path: 'about', component: AboutComponent },
   { path: 'contact', component: ContactComponent },
   { path: 'drug-interactions', component: DrugInteractionsComponent },

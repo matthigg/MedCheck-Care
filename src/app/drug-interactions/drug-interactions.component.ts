@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { NihApproximateMatchApiService } from '../nih-approximate-match-api.service';
+import { NihApproxTermService } from '../nih-approx-term.service';
 import { NihDiApiService } from '../nih-di-api.service';
 import { NihRxcuiApiService } from '../nih-rxcui-api.service';
 import { Observable, Observer, Subscriber, Subscription } from 'rxjs';
@@ -59,7 +59,7 @@ export class DrugInteractionsComponent implements OnInit {
 
   constructor (
     private formBuilder: FormBuilder, 
-    private nihApproximateMatchApiService: NihApproximateMatchApiService,
+    private nihApproxTermService: NihApproxTermService,
     private nihDiApiService: NihDiApiService,
     private nihRxcuiApiService: NihRxcuiApiService,
   ) { }
@@ -67,7 +67,7 @@ export class DrugInteractionsComponent implements OnInit {
   ngOnInit() {
     this.emitPageTitle();
     this.meds.controls.forEach(control => {
-      this.fcSubscribe(control.valueChanges);
+      this.onFormControlInput(control.valueChanges);
     })
   }
 
@@ -87,7 +87,7 @@ export class DrugInteractionsComponent implements OnInit {
   // Add a medication input field.
   medFormAddFormControl(): void {
     const newFc = this.formBuilder.control('');
-    this.fcSubscribe(newFc.valueChanges);
+    this.onFormControlInput(newFc.valueChanges);
     this.meds.push(newFc);
   }
 
@@ -96,30 +96,50 @@ export class DrugInteractionsComponent implements OnInit {
     this.meds.removeAt(index);
   }
 
-  // ---------- NIH APIs -------------------------------------------------------
+  // ---------- NIH Approximate Term API ---------------------------------------
+  // User the NIH Approximate Term API to create typeahead suggestions for users
+  // while they are searching for drugs using the drug interaction form.
 
-  // Get NIH Approximate Match API typeahead suggestions.
-  fcSubscribe(fc$) {
+  // Handle Form Control (FC) input as users type.
+  onFormControlInput(fc$) {
+
+    // Add a debounce function to each Form Control.
     const fcDebounced$ = fc$.pipe(
       debounceTime(1000),
       distinctUntilChanged(),
     );
-    const fcDebounced$Subscriber = fcDebounced$.subscribe({
-      next: res => nextApproxMatchResponse(res),
-      error: err => console.log('NIH Approximate Match API - Error:', err),
-      complete: () => console.log('NIH Approximate Match API - Complete.'),
-    });
 
-    // Keep track of all new Form Control valueChanges: EventEmitter subscribers
+    // Subscribe to each Form Control's valueChanges EventEmitter.
+    const fcDebounced$Subscriber = fcDebounced$.subscribe({
+      next: res => nextFCResponse(res),
+      error: err => console.log('Form Control valueChanges EventEmitter - Error:', err),
+      complete: () => console.log('Form Control valueChanges EventEmitter - Complete.'),
+    });
     this._subscriptions.add(fcDebounced$Subscriber);
 
-    // Make NIH Approximate Match API request.
-    const nextApproxMatchResponse = (res) => {
-      console.log('NIH Approximate Match API - Response:', res);
+    // Make NIH Approximate Term API request.
+    const nextFCResponse = (res) => {
+      console.log('Form Control valueChanges EventEmitter - Response:', res);
+      const approxTerm$ = this.nihApproxTermService.fetchATAPI(res);
+      const approxTerm$Subscriber = approxTerm$.subscribe({
+        next: res => nextATResponse(res),
+        error: err => console.log('NIH Approximate Term API - Error:', err),
+        complete: () => console.log('NIH Approximate Term API - Complete.'),
+      });
+      this._subscriptions.add(approxTerm$Subscriber);
+    }
+
+    // Handle NIH Approximate Term API response.
+    const nextATResponse = (res) => {
+      console.log('NIH Approximate Term API - Response:', res);
     }
   }
 
-  // Get NIH Drug Interaction API results.
+  // ---------- NIH RxCUI & Drug Interactions APIs ----------------------------
+  // Use the NIH RxCUI and Drug Interaction APIs to allow users to search for
+  // drug-drug interactions.
+
+  // Handle drug interactions form submission.
   onSubmit() {
 
     // Clear previous results.
@@ -191,7 +211,7 @@ export class DrugInteractionsComponent implements OnInit {
       // which returns a single observable. 
       } else {
         console.log('NIH RxCUI API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxCUIResponses);
-        const di$: Observable<object> = this.nihDiApiService.fetchDiAPI(this.rxCUIResponses);
+        const di$: Observable<object> = this.nihDiApiService.fetchDIAPI(this.rxCUIResponses);
         const di$Subscriber = di$.subscribe({
           next: res => nextDiResponse(res, di$Subscriber),
           error: err => {

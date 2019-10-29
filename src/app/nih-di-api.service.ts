@@ -11,7 +11,7 @@ export class NihDiApiService {
 
   // Stitch together the URL for the NIH Drug Interactions API request, and 
   // then make request and return the observable.
-  fetchDiAPI(meds: string[]): Observable<object> {
+  fetchDIAPI(meds: string[]): Observable<object> {
     const nihDiApiParamsArray = [];
     meds.forEach(med => {
       nihDiApiParamsArray.push(med);
