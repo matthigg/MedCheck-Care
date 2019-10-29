@@ -1,9 +1,12 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NihApproxTermService } from './nih-approx-term.service';
 import { TestBed } from '@angular/core/testing';
 
-import { NihApproxTermService } from './nih-approx-term.service';
 
 describe('NihApproxTermService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [ HttpClientTestingModule ],
+  }));
 
   it('should be created', () => {
     const service: NihApproxTermService = TestBed.get(NihApproxTermService);
