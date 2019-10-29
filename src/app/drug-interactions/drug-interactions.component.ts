@@ -81,7 +81,9 @@ export class DrugInteractionsComponent implements OnInit {
 
   // Add a medication input field.
   medFormAddFormControl(): void {
-    this.meds.push(this.formBuilder.control(''));
+    const newFc = this.formBuilder.control('');
+    this.fcSubscribe(newFc.valueChanges);
+    this.meds.push(newFc);
   }
 
   // Delete a medication input field.
