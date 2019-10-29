@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { NihApproximateMatchApiService } from '../nih-approximate-match-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
@@ -21,7 +21,8 @@ export class DrugInteractionsComponent implements OnInit {
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
   rxCUIResponses: string[] = [];
-
+  @ViewChild('testInput', { static: true }) testInputRef: ElementRef;
+  
   // This variable determines what to display in the template under "Step 3":
   //
   // 'idle'       - no medications have been submitted to the NIH RxCUI API
@@ -37,13 +38,13 @@ export class DrugInteractionsComponent implements OnInit {
 
   // Define the form model. Users can change this model by adding or removing 
   // fields from the form.
-  medFormFields = { 
+  medFormFields = {
     meds: this.formBuilder.array([ 
       this.formBuilder.control(''),
       this.formBuilder.control('')
     ])
   }
-  get meds() {
+  get meds(): FormArray {                 // TODO: attach observers to controls
     return this.medGroup.get('meds') as FormArray;
   }
 
@@ -61,6 +62,8 @@ export class DrugInteractionsComponent implements OnInit {
 
   ngOnInit() {
     this.emitPageTitle();
+    this.initApproxMatchAPI();
+    console.log('=== meds:', this.meds); // TODO: attach observers to controls
   }
 
   // ---------- Class Methods --------------------------------------------------
@@ -85,22 +88,13 @@ export class DrugInteractionsComponent implements OnInit {
   // ---------- NIH APIs -------------------------------------------------------
 
   // Get NIH Approximate Match API typeahead suggestions.
-  medInputKeyUp(event: KeyboardEvent) {
-    const approxMatch$: Observable<object> = this.nihApproximateMatchApiService.fetchApproxMatchAPI(event)
+  initApproxMatchAPI() {
+    const approxMatch$: Observable<string> = this.nihApproximateMatchApiService.fetchApproxMatchAPI(this.testInputRef.nativeElement)
     const approxMatch$Subscription = approxMatch$.subscribe({
-      next: res => nextApproxMatchResponse(res, approxMatch$Subscription),
-      error: err => { 
-        console.log('NIH Approximate Match API - Error:', err);
-      },
-      complete: () => { 
-        console.log('NIH Approximate Match API - Complete.');
-      },
+      next: res => console.log('NIH Approximate Match API - Response:', res),
+      error: err => console.log('NIH Approximate Match API - Error:', err),
+      complete: () => console.log('NIH Approximate Match API - Complete.'),
     });
-
-    const nextApproxMatchResponse = (res, approxMatch$Subscription) => {
-      console.log('=== res:', res);
-      approxMatch$Subscription.unsubscribe()
-    }
   }
 
   // Get NIH Drug Interaction API results.

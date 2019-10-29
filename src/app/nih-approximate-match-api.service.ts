@@ -12,8 +12,15 @@ export class NihApproximateMatchApiService {
 
   constructor() { }
 
-  fetchApproxMatchAPI(event: KeyboardEvent): Observable<object> {
-    return fromEvent(event.target, 'keyup')
+  fetchApproxMatchAPI(target): Observable<string> {
+    const typeahead = fromEvent(target, 'keyup').pipe(
+      map((event: KeyboardEvent) => (<HTMLInputElement>event.target).value),
+      filter(text => text.length > 2),
+      debounceTime(1000),
+      distinctUntilChanged(),
+      // switchMap(() => ajax('/api/endpoint')),
+    );
+    return typeahead;
   }
 
   // Implement here (in subscription)
