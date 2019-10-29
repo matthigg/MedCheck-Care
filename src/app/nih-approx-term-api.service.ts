@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class NihApproxTermService {
+export class NihApproxTermApiService {
 
   // Number of approximate terms to return
   maxEntries: number = 4;

@@ -1,8 +1,9 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { NihApproxTermService } from '../nih-approx-term.service';
+import { NihApproxTermApiService } from '../nih-approx-term-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
 import { NihRxcuiApiService } from '../nih-rxcui-api.service';
+import { NihPropertiesApiService } from '../nih-properties-api.service';
 import { Observable, Observer, Subscriber, Subscription } from 'rxjs';
 
 import { map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -59,8 +60,9 @@ export class DrugInteractionsComponent implements OnInit {
 
   constructor (
     private formBuilder: FormBuilder, 
-    private nihApproxTermService: NihApproxTermService,
+    private nihApproxTermApiService: NihApproxTermApiService,
     private nihDiApiService: NihDiApiService,
+    private nihPropertiesApiService: NihPropertiesApiService,
     private nihRxcuiApiService: NihRxcuiApiService,
   ) { }
 
@@ -96,7 +98,7 @@ export class DrugInteractionsComponent implements OnInit {
     this.meds.removeAt(index);
   }
 
-  // ---------- NIH Approximate Term API ---------------------------------------
+  // ---------- NIH Approximate Term & RxNorm Properties API -------------------
   // User the NIH Approximate Term API to create typeahead suggestions for users
   // while they are searching for drugs using the drug interaction form.
 
@@ -111,31 +113,61 @@ export class DrugInteractionsComponent implements OnInit {
 
     // Subscribe to each Form Control's valueChanges EventEmitter.
     const fcDebounced$Subscriber = fcDebounced$.subscribe({
-      next: res => nextFCResponse(res),
+      next: (res: string) => nextFCResponse(res),
       error: err => console.log('Form Control valueChanges EventEmitter - Error:', err),
       complete: () => console.log('Form Control valueChanges EventEmitter - Complete.'),
     });
     this._subscriptions.add(fcDebounced$Subscriber);
 
-    // Make NIH Approximate Term API request.
-    const nextFCResponse = (res) => {
+    // Handle Form Control EventEmitter response, use it to make NIH Approximate 
+    // Term API request.
+    const nextFCResponse = (res: string) => {
       console.log('Form Control valueChanges EventEmitter - Response:', res);
-      const approxTerm$ = this.nihApproxTermService.fetchATAPI(res);
+      const approxTerm$ = this.nihApproxTermApiService.fetchATAPI(res);
       const approxTerm$Subscriber = approxTerm$.subscribe({
-        next: res => nextATResponse(res),
+        next: (res: {approximateGroup: {candidate: {rxcui: string}[]}}) => nextATResponse(res),
         error: err => console.log('NIH Approximate Term API - Error:', err),
         complete: () => console.log('NIH Approximate Term API - Complete.'),
       });
       this._subscriptions.add(approxTerm$Subscriber);
     }
 
-    // Handle NIH Approximate Term API response.
-    const nextATResponse = (res) => {
-      console.log('NIH Approximate Term API - Response:', res);
+    // Handle NIH Approximate Term API response, use it to make NIH RxNorm
+    // Properties API request.
+    const nextATResponse = (res: {approximateGroup: {candidate: {rxcui: string}[]}}) => {
+      console.log('NIH Approximate Term API - Response:', res.approximateGroup.candidate);
+      const candidatesSet: Set<string> = new Set();
+      if (res.approximateGroup.candidate) {
+        res.approximateGroup.candidate.forEach(candidate => {
+          candidatesSet.add(candidate.rxcui)
+        });
+
+        // Convert the list of 'approximate term candidates' down to 3,
+        // since some API requests generate dozens of terms.
+        const candidatesArr: string[] = [...candidatesSet].slice(0, 3);
+        const propertiesObservables: Observable<Object>[] = this.nihPropertiesApiService.fetchPropertiesAPI(candidatesArr);
+        const atSuggestions: string[] = [];
+        propertiesObservables.forEach(properties$ => {
+          console.log('=== properties$:', properties$);
+          const properties$Subscriber = properties$.subscribe({
+            next: (res: {properties: {name: string}}) => nextPropertiesResponse(res, atSuggestions),
+            error: err => console.log('NIH Properties API - Error:', err),
+            complete: () => console.log('NIH Properties API - Complete.'),
+          });
+          this._subscriptions.add(properties$Subscriber);
+        });
+      }
+    }
+
+    // Handle NIH RxNorm Properties API response.
+    const nextPropertiesResponse = (res: {properties: {name: string}}, atSuggestions: string[]) => {
+      console.log('NIH Properties API - Response:', res);
+      atSuggestions.push(res.properties.name);
+      console.log('=== atSuggestions:', atSuggestions);
     }
   }
 
-  // ---------- NIH RxCUI & Drug Interactions APIs ----------------------------
+  // ---------- NIH RxNorm RxCUI & Drug Interactions APIs -----------------------
   // Use the NIH RxCUI and Drug Interaction APIs to allow users to search for
   // drug-drug interactions.
 
