@@ -25,9 +25,7 @@ export class DrugInteractionsComponent implements OnInit {
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
   rxCUIResponses: string[] = [];
-  private _fcSubscriptions = new Subscription(); 
-  private _rxCUISubscriptions = new Subscription();
-  private _diSubscriptions = new Subscription();
+  private _subscriptions = new Subscription(); 
   
   // This variable determines what to display in the template under "Step 3":
   //
@@ -74,9 +72,7 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this._fcSubscriptions.unsubscribe();
-    this._rxCUISubscriptions.unsubscribe();
-    this._diSubscriptions.unsubscribe();
+    this._subscriptions.unsubscribe();
   }
 
   // ---------- Class Methods --------------------------------------------------
@@ -114,8 +110,8 @@ export class DrugInteractionsComponent implements OnInit {
       complete: () => console.log('NIH Approximate Match API - Complete.'),
     });
 
-    // Keep track of all new Form Control valueChanged subscribers
-    this._fcSubscriptions.add(fcDebounced$Subscriber);
+    // Keep track of all new Form Control valueChanges: EventEmitter subscribers
+    this._subscriptions.add(fcDebounced$Subscriber);
 
     // Make NIH Approximate Match API request.
     const nextApproxMatchResponse = (res) => {
@@ -169,7 +165,7 @@ export class DrugInteractionsComponent implements OnInit {
         },
         complete: () => console.log('NIH RxCUI API - Complete.'),
       });
-      this._rxCUISubscriptions.add(rxCUI$Subscriber)
+      this._subscriptions.add(rxCUI$Subscriber)
     });
 
     // ---------- NIH Drug Interactions API - Get Drug Interactions ------------
@@ -205,7 +201,7 @@ export class DrugInteractionsComponent implements OnInit {
           },
           complete: () => console.log('NIH Drug Interactions API - Complete.'),
         });
-        this._diSubscriptions.add(di$Subscriber);
+        this._subscriptions.add(di$Subscriber);
       }
     }
 
