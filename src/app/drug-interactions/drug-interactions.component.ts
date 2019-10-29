@@ -1,9 +1,13 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NihApproximateMatchApiService } from '../nih-approximate-match-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
 import { NihRxcuiApiService } from '../nih-rxcui-api.service';
-import { Observable } from 'rxjs';
+import { Observable, Observer, Subscriber } from 'rxjs';
+
+import { map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
+
 
 @Component({
   selector: 'app-drug-interactions',
@@ -20,8 +24,9 @@ export class DrugInteractionsComponent implements OnInit {
   diInteractions: Set<string> = new Set();
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
+  obsDebounced$Subscriptions: Set<Subscriber> = new Set();
   rxCUIResponses: string[] = [];
-  @ViewChild('testInput', { static: true }) testInputRef: ElementRef;
+  // @ViewChild('testInput', { static: true }) testInputRef: ElementRef;
   
   // This variable determines what to display in the template under "Step 3":
   //
@@ -44,7 +49,7 @@ export class DrugInteractionsComponent implements OnInit {
       this.formBuilder.control('')
     ])
   }
-  get meds(): FormArray {                 // TODO: attach observers to controls
+  get meds(): FormArray {
     return this.medGroup.get('meds') as FormArray;
   }
 
@@ -55,15 +60,17 @@ export class DrugInteractionsComponent implements OnInit {
 
   constructor (
     private formBuilder: FormBuilder, 
-    private nihApproximateMatchApiService: NihApproximateMatchApiService,
+    // private nihApproximateMatchApiService: NihApproximateMatchApiService,
     private nihDiApiService: NihDiApiService,
     private nihRxcuiApiService: NihRxcuiApiService,
   ) { }
 
   ngOnInit() {
     this.emitPageTitle();
-    this.initApproxMatchAPI();
-    console.log('=== meds:', this.meds); // TODO: attach observers to controls
+    // this.initApproxMatchAPI();
+    this.meds.controls.forEach(control => {
+      this.initApproxMatchSubscription(control.valueChanges);
+    })
   }
 
   // ---------- Class Methods --------------------------------------------------
@@ -76,25 +83,40 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   // Add a medication input field.
-  medFormAddField(): void {
+  medFormAddFormControl(): void {
     this.meds.push(this.formBuilder.control(''));
   }
 
   // Delete a medication input field.
-  medFormDeleteField(medIndex: number): void {
-    this.meds.removeAt(medIndex)
+  medFormDeleteFormControl(index: number, fc: FormControl): void {
+    (<EventEmitter<any>>fc.valueChanges).observers.forEach((obs: Subscriber<any>) => obs.unsubscribe());
+    this.meds.removeAt(index);
   }
 
   // ---------- NIH APIs -------------------------------------------------------
 
   // Get NIH Approximate Match API typeahead suggestions.
-  initApproxMatchAPI() {
-    const approxMatch$: Observable<string> = this.nihApproximateMatchApiService.fetchApproxMatchAPI(this.testInputRef.nativeElement)
-    const approxMatch$Subscription = approxMatch$.subscribe({
+  // initApproxMatchAPI() {
+  //   const approxMatch$: Observable<string> = this.nihApproximateMatchApiService.fetchApproxMatchAPI(this.testInputRef.nativeElement)
+  //   const approxMatch$Subscription = approxMatch$.subscribe({
+  //     next: res => console.log('NIH Approximate Match API - Response:', res),
+  //     error: err => console.log('NIH Approximate Match API - Error:', err),
+  //     complete: () => console.log('NIH Approximate Match API - Complete.'),
+  //   });
+  // }
+
+  initApproxMatchSubscription(obs$) {
+    const obsDebounced$ = obs$.pipe(
+      debounceTime(1000),
+      distinctUntilChanged(),
+    );
+    const obsDebounced$Subscription = obsDebounced$.subscribe({
       next: res => console.log('NIH Approximate Match API - Response:', res),
       error: err => console.log('NIH Approximate Match API - Error:', err),
       complete: () => console.log('NIH Approximate Match API - Complete.'),
     });
+    // this.obsDebounced$Subscriptions.add(obsDebounced$Subscription);
+    // console.log('=== this.obsDebounced$Subscriptions:', this.obsDebounced$Subscriptions)
   }
 
   // Get NIH Drug Interaction API results.

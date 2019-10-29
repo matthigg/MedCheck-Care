@@ -20,6 +20,7 @@ export class NihApproximateMatchApiService {
       distinctUntilChanged(),
       // switchMap(() => ajax('/api/endpoint')),
     );
+    console.log('=== typeahead:', typeahead)
     return typeahead;
   }
 

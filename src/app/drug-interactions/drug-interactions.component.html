@@ -10,7 +10,6 @@
     <p>
       Follow Steps 1, 2, and 3 below to get started.
     </p>
-    <input #testInput type="text">
   </div>
 
   <!-- Disclaimer -->
@@ -35,10 +34,10 @@
     </p>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">
-        <button class="btn-add-medication" type="button" (click)="medFormAddField()">+Add Another Medication</button>
-        <label *ngFor="let field of meds.controls; let i = index; last as isLast">
+        <button class="btn-add-medication" type="button" (click)="medFormAddFormControl()">+Add Another Medication</button>
+        <label *ngFor="let fc of meds.controls; let i = index; last as isLast">
           <input type="text" [formControlName]="i" [ngClass]="{ 'last': isLast }">
-          <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteField(i)">x</button>
+          <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteFormControl(i, fc)">x</button>
         </label>
       </div>
     </form>
