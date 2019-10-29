@@ -26,7 +26,6 @@ export class DrugInteractionsComponent implements OnInit {
   diUserInput: Set<string> = new Set();
   obsDebounced$Subscriptions: Set<Subscriber> = new Set();
   rxCUIResponses: string[] = [];
-  // @ViewChild('testInput', { static: true }) testInputRef: ElementRef;
   
   // This variable determines what to display in the template under "Step 3":
   //
@@ -67,7 +66,6 @@ export class DrugInteractionsComponent implements OnInit {
 
   ngOnInit() {
     this.emitPageTitle();
-    // this.initApproxMatchAPI();
     this.meds.controls.forEach(control => {
       this.initApproxMatchSubscription(control.valueChanges);
     })
@@ -95,16 +93,6 @@ export class DrugInteractionsComponent implements OnInit {
 
   // ---------- NIH APIs -------------------------------------------------------
 
-  // Get NIH Approximate Match API typeahead suggestions.
-  // initApproxMatchAPI() {
-  //   const approxMatch$: Observable<string> = this.nihApproximateMatchApiService.fetchApproxMatchAPI(this.testInputRef.nativeElement)
-  //   const approxMatch$Subscription = approxMatch$.subscribe({
-  //     next: res => console.log('NIH Approximate Match API - Response:', res),
-  //     error: err => console.log('NIH Approximate Match API - Error:', err),
-  //     complete: () => console.log('NIH Approximate Match API - Complete.'),
-  //   });
-  // }
-
   initApproxMatchSubscription(obs$) {
     const obsDebounced$ = obs$.pipe(
       debounceTime(1000),
@@ -115,8 +103,6 @@ export class DrugInteractionsComponent implements OnInit {
       error: err => console.log('NIH Approximate Match API - Error:', err),
       complete: () => console.log('NIH Approximate Match API - Complete.'),
     });
-    // this.obsDebounced$Subscriptions.add(obsDebounced$Subscription);
-    // console.log('=== this.obsDebounced$Subscriptions:', this.obsDebounced$Subscriptions)
   }
 
   // Get NIH Drug Interaction API results.
