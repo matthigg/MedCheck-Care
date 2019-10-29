@@ -24,7 +24,6 @@ export class DrugInteractionsComponent implements OnInit {
   diInteractions: Set<string> = new Set();
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
-  obsDebounced$Subscriptions: Set<Subscriber> = new Set();
   rxCUIResponses: string[] = [];
   
   // This variable determines what to display in the template under "Step 3":
@@ -59,7 +58,7 @@ export class DrugInteractionsComponent implements OnInit {
 
   constructor (
     private formBuilder: FormBuilder, 
-    // private nihApproximateMatchApiService: NihApproximateMatchApiService,
+    private nihApproximateMatchApiService: NihApproximateMatchApiService,
     private nihDiApiService: NihDiApiService,
     private nihRxcuiApiService: NihRxcuiApiService,
   ) { }
@@ -67,7 +66,7 @@ export class DrugInteractionsComponent implements OnInit {
   ngOnInit() {
     this.emitPageTitle();
     this.meds.controls.forEach(control => {
-      this.initApproxMatchSubscription(control.valueChanges);
+      this.fcSubscribe(control.valueChanges);
     })
   }
 
@@ -93,16 +92,21 @@ export class DrugInteractionsComponent implements OnInit {
 
   // ---------- NIH APIs -------------------------------------------------------
 
-  initApproxMatchSubscription(obs$) {
-    const obsDebounced$ = obs$.pipe(
+  // 
+  fcSubscribe(fc$) {
+    const fcDebounced$ = fc$.pipe(
       debounceTime(1000),
       distinctUntilChanged(),
     );
-    const obsDebounced$Subscription = obsDebounced$.subscribe({
-      next: res => console.log('NIH Approximate Match API - Response:', res),
+    const fcDebounced$Subscriber = fcDebounced$.subscribe({
+      next: res => nextApproxMatchResponse(res),
       error: err => console.log('NIH Approximate Match API - Error:', err),
       complete: () => console.log('NIH Approximate Match API - Complete.'),
     });
+
+    const nextApproxMatchResponse = (res) => {
+      console.log('NIH Approximate Match API - Response:', res);
+    }
   }
 
   // Get NIH Drug Interaction API results.
@@ -142,8 +146,8 @@ export class DrugInteractionsComponent implements OnInit {
     rxCUIObservables.forEach(rxCUIObservable => {
 
       // Subscribe to each rxCUI observable in order to retrieve RxCUI numbers.
-      const rxCUI$Subscription = rxCUIObservable.observable.subscribe({
-        next: (res: {idGroup: {rxnormId}}) => nextRxCUIResponse(res, rxCUIObservable.med, rxCUI$Subscription),
+      const rxCUI$Subscriber = rxCUIObservable.observable.subscribe({
+        next: (res: {idGroup: {rxnormId}}) => nextRxCUIResponse(res, rxCUIObservable.med, rxCUI$Subscriber),
         error: err => { 
           console.log('NIH RxCUI API - Error:', err);
           this.diError = err;
@@ -158,14 +162,14 @@ export class DrugInteractionsComponent implements OnInit {
     // ---------- NIH Drug Interactions API - Get Drug Interactions ------------
 
     // Store the RxCUI numbers from the "next" response in the rxCUIResponses[]
-    // array, unsubscribe from the rxCUISubscription, and initiate NIH Drug
+    // array, unsubscribe from the rxCUISubscriber, and initiate NIH Drug
     // Interactions API request once all responses from the NIH RxCUI API have
     // been received.
-    const nextRxCUIResponse = (res: {idGroup: {rxnormId}}, med, rxCUI$Subscription) => {
+    const nextRxCUIResponse = (res: {idGroup: {rxnormId}}, med, rxCUI$Subscriber) => {
       this.rxCUIResponses.push(
         (() => { return res.idGroup.rxnormId ? res.idGroup.rxnormId[0] : `No valid RxCUI number found for '${med}'.` })() 
       );
-      rxCUI$Subscription.unsubscribe()
+      rxCUI$Subscriber.unsubscribe()
 
       // Awaiting responses/RxCUI numbers from the NIH RxCUI API for all 
       // user-submitted medications.
@@ -179,8 +183,8 @@ export class DrugInteractionsComponent implements OnInit {
       } else {
         console.log('NIH RxCUI API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxCUIResponses);
         const di$: Observable<object> = this.nihDiApiService.fetchDiAPI(this.rxCUIResponses);
-        const di$Subscription = di$.subscribe({
-          next: res => nextDiResponse(res, di$Subscription),
+        const di$Subscriber = di$.subscribe({
+          next: res => nextDiResponse(res, di$Subscriber),
           error: err => {
             console.log('NIH Drug Interactions API - Error:', err);
             this.diError = err;
@@ -205,7 +209,7 @@ export class DrugInteractionsComponent implements OnInit {
         url: string,
       }[],
     }
-    const nextDiResponse = (res, di$Subscription) => {
+    const nextDiResponse = (res, di$Subscriber) => {
       const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
         this.diDisclaimer = res.nlmDisclaimer;
@@ -236,7 +240,7 @@ export class DrugInteractionsComponent implements OnInit {
         console.log('NIH Drug Interaction API RESULTS: No interactions to report.');
         this.step3ResultsStatus = 'noResults';
       }
-      di$Subscription.unsubscribe();
+      di$Subscriber.unsubscribe();
     }
 
     // ---------- NIH Drug Interactions API - Display Results ------------------
