@@ -9,7 +9,6 @@ import { Observable, Observer, Subscriber, Subscription } from 'rxjs';
 import { map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 
-
 @Component({
   selector: 'app-drug-interactions',
   templateUrl: './drug-interactions.component.html',

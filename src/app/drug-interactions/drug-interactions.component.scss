@@ -41,7 +41,7 @@
   .grid-container {
     grid-template-columns: repeat(8, 1fr);
     grid-template-areas:
-    "intro intro intro intro discl discl discl discl"
+    ".     intro intro intro discl discl discl .    "
     ".     step1 step1 step1 step1 step1 step1 .    "
     ".     step2 step2 step2 step2 step2 step2 .    "
     ".     step3 step3 step3 step3 step3 step3 .    ";
