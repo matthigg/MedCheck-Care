@@ -1,13 +1,12 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NihApproxTermApiService } from '../nih-approx-term-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
 import { NihRxcuiApiService } from '../nih-rxcui-api.service';
 import { NihPropertiesApiService } from '../nih-properties-api.service';
-import { Observable, Observer, Subscriber, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
-import { map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-drug-interactions',
@@ -67,7 +66,7 @@ export class DrugInteractionsComponent implements OnInit {
 
   ngOnInit() {
     this.pageTitle.emit('Drug Interactions');
-    this.meds.controls.forEach(fc => {
+    this.meds.controls.forEach((fc: FormControl) => {
       this.onFormControlInput(fc);
     })
   }
@@ -95,11 +94,14 @@ export class DrugInteractionsComponent implements OnInit {
   // while they are searching for drugs using the drug interaction form.
 
   // Handle Form Control (FC) input as users type.
-  onFormControlInput(fc) {
+  onFormControlInput(fc: FormControl): void {
 
     // Initialize a property on every Form Control object that can be used to
     // store Approximate Term API suggestions.
-    fc.atSuggestions = [];
+    interface FormControlWithAT extends FormControl {
+      atSuggestions: string[]
+    }
+    (fc as FormControlWithAT).atSuggestions = [];
 
     // Access the Form Control's EventEmitter property, ie. "valueChanges".
     const fc$ = fc.valueChanges;
@@ -138,7 +140,7 @@ export class DrugInteractionsComponent implements OnInit {
       
       // Clear the approximate term suggestions from previous NIH Approximate
       // Term API requests.
-      fc.atSuggestions = [];
+      (fc as FormControlWithAT).atSuggestions = [];
       
       // Collect search term candidates using a set; sometimes there can be 
       // dozens of candidates with identical RxCUI numbers.
@@ -170,7 +172,7 @@ export class DrugInteractionsComponent implements OnInit {
     const nextPropertiesResponse = (res: {properties: {name: string}}) => {
       console.log('NIH Properties API - Response:', res);
       if (res) {
-        fc.atSuggestions.push(res.properties.name);
+        (fc as FormControlWithAT).atSuggestions.push(res.properties.name);
       } 
     }
   }
@@ -253,7 +255,7 @@ export class DrugInteractionsComponent implements OnInit {
         console.log('NIH RxCUI API - Success: RxCUI numbers for all submitted medication requests have been received:', this.rxCUIResponses);
         const di$: Observable<object> = this.nihDiApiService.fetchDIAPI(this.rxCUIResponses);
         const di$Subscriber = di$.subscribe({
-          next: res => nextDiResponse(res, di$Subscriber),
+          next: (res: {fullInteractionTypeGroup: any, nlmDisclaimer: string}) => nextDiResponse(res, di$Subscriber),
           error: err => {
             console.log('NIH Drug Interactions API - Error:', err);
             this.diError = err;
@@ -277,7 +279,7 @@ export class DrugInteractionsComponent implements OnInit {
         url: string,
       }[],
     }
-    const nextDiResponse = (res, di$Subscriber) => {
+    const nextDiResponse = (res: {fullInteractionTypeGroup: any, nlmDisclaimer: string}, di$Subscriber) => {
       const diResults: DiResult[] = [];
       if (res.fullInteractionTypeGroup) {
         this.diDisclaimer = res.nlmDisclaimer;
