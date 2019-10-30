@@ -37,7 +37,6 @@
         <button class="btn-add-medication" type="button" (click)="medFormAddFormControl()">+Add Another Medication</button>
         <label *ngFor="let fc of meds.controls; let i = index; last as isLast">
           <input type="text" [attr.list]="'atSuggestion' + i" autocomplete="off" [formControlName]="i" [ngClass]="{ 'last': isLast }">
-          index: {{ i }}
 
           <datalist [id]="'atSuggestion' + i">
             <span *ngFor="let atSuggestion of fc.atSuggestions">
@@ -46,9 +45,6 @@
           </datalist>
 
           <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteFormControl(i)">x</button>
-          fc.atSuggestions: {{ fc.atSuggestions }}
-          {{ testStr }}
-          <button type="button" (click)="testFn()">test</button>
         </label>
       </div>
     </form>

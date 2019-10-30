@@ -99,11 +99,6 @@ export class DrugInteractionsComponent implements OnInit {
     this.meds.removeAt(index);
   }
 
-  testStr: string;
-  testFn() {
-    this.testStr = Math.random() + 'asdf';
-  }
-
   // ---------- NIH Approximate Term & RxNorm Properties API -------------------
   // User the NIH Approximate Term API to create typeahead suggestions for users
   // while they are searching for drugs using the drug interaction form.
@@ -180,13 +175,11 @@ export class DrugInteractionsComponent implements OnInit {
 
     // Handle NIH RxNorm Properties API response.
     const nextPropertiesResponse = (res: {properties: {name: string}}) => {
+      console.log('NIH Properties API - Response:', res);
       if (res) {
-        console.log('NIH Properties API - Response:', res);
         fc.atSuggestions.push(res.properties.name);
-        console.log('=== fc.atSuggestions:', fc.atSuggestions);
       } else {
         fc.atSuggestions = [];
-        // console.log('=== fc:', fc);
       }
     }
   }
