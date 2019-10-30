@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable, Subscription } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { first, map, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-side-nav',
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.scss']
 })
-export class SideNavComponent {
+export class SideNavComponent implements OnDestroy, OnInit {
 
   // This observable is used to detect whether or not the screen width is <= 960
   // pixels, ie. "Handset" size. It is part of Angular Material's "Sidenav" 
@@ -51,16 +51,9 @@ export class SideNavComponent {
 
   // This function is triggered by <router-outlet>'s (activate) event, which
   // occurs whenever a component is rendered via the AppRoutingModule.
-  componentAdded(component): void {
-    this.pageTitleSubscription = component.pageTitle.subscribe(
-      title => this.pageTitle = title
-    )
-  }
-
-  // This function is triggered by <router-outlet>'s (deactivate) event, which
-  // occurs whenever a component that was rendered via the AppRoutingModule is
-  // destroyed.
-  componentRemoved(): void {
-    this.pageTitleSubscription.unsubscribe()
+  componentAdded(component: {pageTitle: EventEmitter<string>}): void {
+    this.pageTitleSubscription = component.pageTitle
+      .pipe(first())
+      .subscribe(title => this.pageTitle = title)
   }
 }
