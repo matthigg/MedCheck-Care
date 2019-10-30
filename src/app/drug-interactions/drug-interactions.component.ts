@@ -27,6 +27,7 @@ export class DrugInteractionsComponent implements OnInit {
   diUserInput: Set<string> = new Set();
   rxCUIResponses: string[] = [];
   private _subscriptions = new Subscription(); 
+  atSuggestions: string[];
   
   // This variable determines what to display in the template under "Step 3":
   //
@@ -68,8 +69,8 @@ export class DrugInteractionsComponent implements OnInit {
 
   ngOnInit() {
     this.emitPageTitle();
-    this.meds.controls.forEach(control => {
-      this.onFormControlInput(control.valueChanges);
+    this.meds.controls.forEach(fc => {
+      this.onFormControlInput(fc);
     })
   }
 
@@ -89,7 +90,7 @@ export class DrugInteractionsComponent implements OnInit {
   // Add a medication input field.
   medFormAddFormControl(): void {
     const newFc = this.formBuilder.control('');
-    this.onFormControlInput(newFc.valueChanges);
+    this.onFormControlInput(newFc);
     this.meds.push(newFc);
   }
 
@@ -103,7 +104,12 @@ export class DrugInteractionsComponent implements OnInit {
   // while they are searching for drugs using the drug interaction form.
 
   // Handle Form Control (FC) input as users type.
-  onFormControlInput(fc$) {
+  onFormControlInput(fc) {
+
+    fc.atSuggestions = [];
+
+    // Access the Form Control's EventEmitter property, ie. "valueChanges".
+    const fc$ = fc.valueChanges;
 
     // Add a debounce function to each Form Control.
     const fcDebounced$ = fc$.pipe(
@@ -136,21 +142,27 @@ export class DrugInteractionsComponent implements OnInit {
     // Properties API request.
     const nextATResponse = (res: {approximateGroup: {candidate: {rxcui: string}[]}}) => {
       console.log('NIH Approximate Term API - Response:', res.approximateGroup.candidate);
+      
+      // Clear the approximate term suggestions from previous NIH Approximate
+      // Term API requests.
+      fc.atSuggestions = [];
+      
       const candidatesSet: Set<string> = new Set();
       if (res.approximateGroup.candidate) {
         res.approximateGroup.candidate.forEach(candidate => {
           candidatesSet.add(candidate.rxcui)
         });
 
-        // Convert the list of 'approximate term candidates' down to 3,
-        // since some API requests generate dozens of terms.
+        // Non-selectively trim the list of 'approximate term candidates' down to 
+        // 3, since some API requests generate dozens of terms.
         const candidatesArr: string[] = [...candidatesSet].slice(0, 3);
+
+        // Subscribe to one or more properties observables, each of which can
+        // receive a different approximate term suggestion.
         const propertiesObservables: Observable<Object>[] = this.nihPropertiesApiService.fetchPropertiesAPI(candidatesArr);
-        const atSuggestions: string[] = [];
         propertiesObservables.forEach(properties$ => {
-          console.log('=== properties$:', properties$);
           const properties$Subscriber = properties$.subscribe({
-            next: (res: {properties: {name: string}}) => nextPropertiesResponse(res, atSuggestions),
+            next: (res: {properties: {name: string}}) => nextPropertiesResponse(res),
             error: err => console.log('NIH Properties API - Error:', err),
             complete: () => console.log('NIH Properties API - Complete.'),
           });
@@ -160,10 +172,15 @@ export class DrugInteractionsComponent implements OnInit {
     }
 
     // Handle NIH RxNorm Properties API response.
-    const nextPropertiesResponse = (res: {properties: {name: string}}, atSuggestions: string[]) => {
-      console.log('NIH Properties API - Response:', res);
-      atSuggestions.push(res.properties.name);
-      console.log('=== atSuggestions:', atSuggestions);
+    const nextPropertiesResponse = (res: {properties: {name: string}}) => {
+      if (res) {
+        console.log('NIH Properties API - Response:', res);
+        fc.atSuggestions.push(res.properties.name);
+        console.log('=== fc:', fc);
+      } else {
+        fc.atSuggestions = [];
+        console.log('=== fc:', fc);
+      }
     }
   }
 
