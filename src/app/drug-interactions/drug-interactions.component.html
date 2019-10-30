@@ -30,32 +30,31 @@
     <p>
       Use the fields below to type in the names of prescription medications, 
       over-the-counter (OTC) medications, and/or herbal supplements that you want 
-      to check for interactions. {{ atSuggestions }}
+      to check for interactions.
     </p>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">
         <button class="btn-add-medication" type="button" (click)="medFormAddFormControl()">+Add Another Medication</button>
         <label *ngFor="let fc of meds.controls; let i = index; last as isLast">
-          <input type="text" list="atSuggestions" [formControlName]="i" [ngClass]="{ 'last': isLast }">
-          <datalist id="atSuggestions">
-            <div *ngIf="atSuggestions">
-              <option value="one">
-              <option value="two">
-              <option value="three">
-            </div>
+          <input type="text" [attr.list]="'atSuggestion' + i" autocomplete="off" [formControlName]="i" [ngClass]="{ 'last': isLast }">
+          index: {{ i }}
+
+          <datalist [id]="'atSuggestion' + i">
+            <span *ngFor="let atSuggestion of fc.atSuggestions">
+              <option value="{{ atSuggestion }}">
+            </span>
           </datalist>
+
           <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteFormControl(i)">x</button>
+          fc.atSuggestions: {{ fc.atSuggestions }}
+          {{ testStr }}
+          <button type="button" (click)="testFn()">test</button>
         </label>
       </div>
     </form>
     <p>
       Click the "+Add Another Medication" button if you want to check additional 
       medications, otherwise proceed to Step 2 after you have finished.
-    </p>
-    <p *ngIf="atSuggestions">
-      <span *ngFor="let atSuggestion of atSuggestions">
-        {{ atSuggestion }}
-      </span>
     </p>
   </div>
 

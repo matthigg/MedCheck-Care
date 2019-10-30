@@ -99,6 +99,11 @@ export class DrugInteractionsComponent implements OnInit {
     this.meds.removeAt(index);
   }
 
+  testStr: string;
+  testFn() {
+    this.testStr = Math.random() + 'asdf';
+  }
+
   // ---------- NIH Approximate Term & RxNorm Properties API -------------------
   // User the NIH Approximate Term API to create typeahead suggestions for users
   // while they are searching for drugs using the drug interaction form.
@@ -147,6 +152,8 @@ export class DrugInteractionsComponent implements OnInit {
       // Term API requests.
       fc.atSuggestions = [];
       
+      // Collect search term candidates using a set; sometimes there can be 
+      // dozens of candidates with identical RxCUI numbers.
       const candidatesSet: Set<string> = new Set();
       if (res.approximateGroup.candidate) {
         res.approximateGroup.candidate.forEach(candidate => {
@@ -176,10 +183,10 @@ export class DrugInteractionsComponent implements OnInit {
       if (res) {
         console.log('NIH Properties API - Response:', res);
         fc.atSuggestions.push(res.properties.name);
-        console.log('=== fc:', fc);
+        console.log('=== fc.atSuggestions:', fc.atSuggestions);
       } else {
         fc.atSuggestions = [];
-        console.log('=== fc:', fc);
+        // console.log('=== fc:', fc);
       }
     }
   }
