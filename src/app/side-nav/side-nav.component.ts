@@ -34,17 +34,14 @@ export class SideNavComponent implements OnDestroy, OnInit {
 
   constructor(private breakpointObserver: BreakpointObserver) { }
 
-  // Subscribe to the isHandset$ observable so that we can access its value within
-  // the template, specifically within (click) event binding syntax.
   ngOnInit() {
+
+    // Make the screen width oberservable available to the template as a property
     this.handsetSubscription = this.isHandset$.subscribe(
       value => this.handsetScreenActive = value
     )
   }
 
-  // Since we're subscribing to the isHandset$ observable manually, we should
-  // also manually unsubscribe when the component is destroyed in order to avoid
-  // a memory leak.
   ngOnDestroy() {
     this.handsetSubscription.unsubscribe()
   }
