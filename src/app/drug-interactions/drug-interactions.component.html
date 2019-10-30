@@ -35,8 +35,8 @@
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()">
       <div formArrayName="meds">
         <button class="btn-add-medication" type="button" (click)="medFormAddFormControl()">+Add Another Medication</button>
-        <label *ngFor="let fc of meds.controls; let i = index; last as isLast">
-          <input type="text" [attr.list]="'atSuggestion' + i" autocomplete="off" [formControlName]="i" [ngClass]="{ 'last': isLast }">
+        <label *ngFor="let fc of meds.controls; let i = index; last as isLast" [ngClass]="{ 'last': isLast }">
+          <input type="text" [attr.list]="'atSuggestion' + i" autocomplete="off" [formControlName]="i">
 
           <datalist [id]="'atSuggestion' + i">
             <span *ngFor="let atSuggestion of fc.atSuggestions">
@@ -44,7 +44,9 @@
             </span>
           </datalist>
 
-          <button class="btn-delete" type="button" tabindex="-1" (click)="medFormDeleteFormControl(i)">x</button>
+          <svg class="delete-button-svg" (click)="medFormDeleteFormControl(i)">
+            <use xlink:href="#delete-button" />
+          </svg>
         </label>
       </div>
     </form>
