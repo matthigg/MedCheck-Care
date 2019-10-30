@@ -32,13 +32,14 @@ export class SideNavComponent {
   pageTitle: string
   pageTitleSubscription: Subscription
 
-  constructor(private breakpointObserver: BreakpointObserver) {
-  }
+  constructor(private breakpointObserver: BreakpointObserver) { }
 
   // Subscribe to the isHandset$ observable so that we can access its value within
   // the template, specifically within (click) event binding syntax.
   ngOnInit() {
-    this.handsetSubscription = this.isHandset$.subscribe(value => this.handsetScreenActive = value)
+    this.handsetSubscription = this.isHandset$.subscribe(
+      value => this.handsetScreenActive = value
+    )
   }
 
   // Since we're subscribing to the isHandset$ observable manually, we should
@@ -51,7 +52,9 @@ export class SideNavComponent {
   // This function is triggered by <router-outlet>'s (activate) event, which
   // occurs whenever a component is rendered via the AppRoutingModule.
   componentAdded(component): void {
-    this.pageTitleSubscription = component.pageTitle.subscribe(title => this.pageTitle = title)
+    this.pageTitleSubscription = component.pageTitle.subscribe(
+      title => this.pageTitle = title
+    )
   }
 
   // This function is triggered by <router-outlet>'s (deactivate) event, which
@@ -60,5 +63,4 @@ export class SideNavComponent {
   componentRemoved(): void {
     this.pageTitleSubscription.unsubscribe()
   }
-
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NihApproxTermApiService } from '../nih-approx-term-api.service';
 import { NihDiApiService } from '../nih-di-api.service';
@@ -13,7 +13,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   templateUrl: './drug-interactions.component.html',
   styleUrls: ['./drug-interactions.component.scss']
 })
-export class DrugInteractionsComponent implements OnInit {
+export class DrugInteractionsComponent implements OnInit, OnDestroy {
 
   // ---------- Class Variable Declarations ------------------------------------
 
