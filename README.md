@@ -144,24 +144,43 @@
 
 ## SVG's
 
-- To include svg tags so that you can manipulate & animate them, there are several approaches. 
+- To include SVG tags so that you can manipulate & animate them, there are several approaches. 
 
-- Components: you could create an individual component for each svg that you want to include in your view, and then embed that svg component within a host component in a parent/child relationship. 
+- Components: you could create an individual component for each SVG that you want to include in your view, and then embed that SVG component within a host component in a parent/child relationship. 
 
-- SVG Sprite Sheets: you could also create a "dumb" component that will act as a placeholder that can optionally display whichever svg you choose, where an svg is selected from a master svg template. This helps organize multiple svg's into one location, similar to a "sprite sheet".
+- SVG Sprite Sheets: you could also create a "dumb" component that will act as a placeholder that can optionally display whichever SVG you choose, where an SVG is selected from a master SVG template. This helps organize multiple SVG's into one location, similar to a "sprite sheet".
 
-  > With this approach, you can use the svg <use> tag to "clone" svg elements. 
+  > With this approach, you can use the SVG <use> tag to "clone" SVG elements. 
 
-  > Specifically, you define all of your individual svg's within a single parent <svg> tag, and delineate individual svg's by enclosing each one within <symbol> tags. You would then hide all of these individual svg's by assigning a "display: none" style (or something similar) to the parent <svg> tag. The resulting file constitutes the "sprite sheet". 
+  > Specifically, you define all of your individual SVG's within a single parent <svg> tag, and delineate individual SVG's by enclosing each one within <symbol> tags. You would then hide all of these individual SVG's, ie. <symbol>'s, by assigning a "display: none" style (or something similar) to the parent <svg> tag. The resulting file constitutes the "sprite sheet". 
   
-  > Afterwards you could then select and use an individual svg from this "sprite sheet" in a template by referencing it directly using a combination of the <use> tag and the svg's CSS id selector
+  > Afterwards you could then select and use an individual SVG's from this "sprite sheet" in a template by referencing it directly using a combination of the <use> tag and the SVG/<symbol>'s CSS ID selector. Specifically, the <use> tag must have an xlink:href attribute whose value is a CSS ID selector that targets the  SVG/<symbol>'s ID attribute. For example:
+  
+-- ~/src/app/svg-sprite-sheet/svg-sprite-sheet.component.html
+    <svg>
+      <symbol id="#svg-logo">
+        ...
+      </symbol>
+    </svg>
 
-  > In some cases, since svg's don't have HTML attributes in the traditional sense you have to use attribute-binding syntax, ie. attr.xlink:href (I forget which cases, need to refer back to this later).
+-- ~/src/app/
+
+    ...
+      <svg>
+        <use xlink:href="#svg-logo" />
+      </svg>
+    ...
+
+  > The issue with using the <use> tag to swap in SVG/<symbol>'s is that the <use> tag will insert SVG/<symbol>'s into the Shadow DOM. In the Shadow DOM, you can't always directly target elements using CSS -- you can pass them attributes indirectly like "fill" and "stroke" from a parent wrapper object (or from the <use> element itself, which acts as a wrapper over SVG/<symbol>'s) but you can't directly grab elements in the Shadow DOM. For example, you can't assign pseudoclasses like :hover to elements located in the Shadow DOM. 
+
+  > Another issue is that if you create a "sprite sheet" in Angular as a separate component, Angular will encapsulate all of its views on a per-component basis. That means that, in addition to limited access to the SVG/<symbol>'s that have been inserted into the Shadow DOM via the <use> tag, they are also assigned custom & randomized Angular attributes in order to encapsulate them to their environment of their component. This means that there are 2 obstacles to overcome when trying to access and manipulate SVG/<symbol>'s in an Angular project that come from a stand-alone "sprite sheet" component.
 
   1. https://itnext.io/easy-way-to-organize-your-icons-using-svgs-in-angular-5-f35333d0b442
   2. https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use
   3. https://stackoverflow.com/questions/35082657/angular2-svg-xlinkhref1
   4. https://css-tricks.com/svg-sprites-use-better-icon-fonts/
+  5. https://stackoverflow.com/questions/13673441/svg-use-element-and-hover-style
+  6. https://stackoverflow.com/questions/46353027/changing-css-with-svg-symbols-on-hover
 
 - Raw Loader: you could also use a custom Webpack build process that utilizes a "raw-loader".
 
@@ -243,7 +262,7 @@
 
 - However, since this (and most) sites are dynamic, and the "About" view isn't the only view, we're using Angular routing which creates the above scenario where there isn't -technically- a parent/child relationship. To solve this problem, you can either A) create a service to handle changing the page title, or B) use the <router-outlet>'s built-in "activate" and "deactivate" functions which automatically emit whenever a component is swapped in/created, or swapped out/destroyed. This project uses the "activate" and "deactivate" functions to simulate a parent/child relationship between the sidenav component and all of the other components whose views can be displayed within the sidenav.
 
-## Reactive vs. Template Forms
+## Reactive Forms vs. Template Forms
 
 - Angular offers two approaches to handling user input with forms: reactive and template-based. Reactive forms are more robust in that they're more scalable, reusable, and testable, whereas template forms are easier to add and much simpler. 
 
@@ -312,15 +331,33 @@
 
   1. https://angular.io/guide/reactive-forms
 
-## NIH Drug Interaction API Service
+## NIH APIs
 
-- 
+- This site uses following NIH APIs:
 
+  1. RxNorm Approximate Term API
+    > https://rxnav.nlm.nih.gov/RxNormAPIs.html#uLink=RxNorm_REST_getApproximateMatch
 
+  2. RxNorm Properties (by rxcui) API
+    > https://rxnav.nlm.nih.gov/RxNormAPIs.html#uLink=RxNorm_REST_getRxConceptProperties
 
+  3. RxNorm RxCUI (by name) API
+    > https://rxnav.nlm.nih.gov/RxNormAPIs.html#uLink=RxNorm_REST_findRxcuiByString
 
+  4. Drug Interaction API
+    > https://rxnav.nlm.nih.gov/InteractionAPIs.html#
 
+- The Approximate Term and Properties APIs are used to generate typeahead suggestions, while the RxCUI and Drug Interaction APIs are used to retrieve a list of possible drug-drug interactions.
 
+- Drugs searches are made using the ReactiveFormsModule to create a "reactive form" in the DrugInteractionsComponent template. The form allows uers to dynamically create new fields, ie. "Form Controls"., or delete them.
+
+- Monitoring user input in the input fields, as well as utilizing all of the NIH APIs requires the use of a lot of observers to handle the reponses from all of the API requests. Observers have to be subscribed to before they will emit/share the results of an API request, but they also have to be unsubscribed from when they are no longer needed. This relationship, or "subscription" ties up memory, and if the subscription is no longer needed but still using memory then it constitutes a memory leak.
+
+- There are several strategies for dealing with subscriber-related memory leaks in Angular. This site takes an approach that is probably not ideal, but anyways. Every time an observable/event emitter in the DrugInteractionsComponent is subscribed to, the subscriber is added to a global, private _subscription object of type Subscription. During the ngOnDestroy() lifecycle-hook, this private _subscription object executes its *.unsubscribe() method, which conveniently unsubscribes all subscriptions that it contains (which ideally -should- be every active/open or inactive/closed subscription that is part of the component being destroyed). 
+
+- A better approach to handling subscriber-related memory leaks is to use the RxJS library's *.takeUntil() method to handle subscriptions, more info can be found here:
+
+  1. https://stackoverflow.com/questions/41364078/angular-2-does-subscribing-to-formcontrols-valuechanges-need-an-unsubscribe/46893278
 
 ## Testing
 
