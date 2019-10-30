@@ -53,11 +53,4 @@ export class SideNavComponent {
       title => this.pageTitle = title
     )
   }
-
-  // This function is triggered by <router-outlet>'s (deactivate) event, which
-  // occurs whenever a component that was rendered via the AppRoutingModule is
-  // destroyed.
-  componentRemoved(): void {
-    this.pageTitleSubscription.unsubscribe()
-  }
 }
