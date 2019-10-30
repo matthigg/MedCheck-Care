@@ -26,7 +26,6 @@ export class DrugInteractionsComponent implements OnInit {
   diUserInput: Set<string> = new Set();
   rxCUIResponses: string[] = [];
   private _subscriptions = new Subscription(); 
-  atSuggestions: string[];
   
   // This variable determines what to display in the template under "Step 3":
   //
@@ -67,7 +66,7 @@ export class DrugInteractionsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.emitPageTitle();
+    this.pageTitle.emit('Drug Interactions');
     this.meds.controls.forEach(fc => {
       this.onFormControlInput(fc);
     })
@@ -78,13 +77,6 @@ export class DrugInteractionsComponent implements OnInit {
   }
 
   // ---------- Class Methods --------------------------------------------------
-
-  // Since the title/header for each view in this website is embedded in the 
-  // parent side-nav component, we are emitting each child view's title via 
-  // child --> parent data flow.
-  emitPageTitle(): void {
-    this.pageTitle.emit('Drug Interactions');
-  }
 
   // Add a medication input field.
   medFormAddFormControl(): void {
@@ -105,12 +97,14 @@ export class DrugInteractionsComponent implements OnInit {
   // Handle Form Control (FC) input as users type.
   onFormControlInput(fc) {
 
+    // Initialize a property on every Form Control object that can be used to
+    // store Approximate Term API suggestions.
     fc.atSuggestions = [];
 
     // Access the Form Control's EventEmitter property, ie. "valueChanges".
     const fc$ = fc.valueChanges;
 
-    // Add a debounce function to each Form Control.
+    // Add a debounce function to each Form Control object.
     const fcDebounced$ = fc$.pipe(
       debounceTime(1000),
       distinctUntilChanged(),
