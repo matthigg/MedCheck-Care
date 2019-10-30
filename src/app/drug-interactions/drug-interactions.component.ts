@@ -178,9 +178,7 @@ export class DrugInteractionsComponent implements OnInit {
       console.log('NIH Properties API - Response:', res);
       if (res) {
         fc.atSuggestions.push(res.properties.name);
-      } else {
-        fc.atSuggestions = [];
-      }
+      } 
     }
   }
 
