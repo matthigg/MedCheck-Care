@@ -1,13 +1,14 @@
 @import '../../colors';
 
-.logo-capsule {
-  fill: $primary-color;
+#svg-logo {
+  & #svg-logo-capsule { fill: $primary-color; }
+  & #svg-logo-pill-top { fill: $secondary-color; }
+  & #svg-logo-pill-bottom { fill: $tertiary-color; }
 }
 
-.logo-pill-top {
-  fill: $secondary-color;
-}
-
-.logo-pill-bottom {
-  fill: $tertiary-color;
-}
+// https://stackoverflow.com/questions/13673441/svg-use-element-and-hover-style
+// #svg-delete-button {
+//   & #svg-delete-button-circle { fill: $primary-color; }
+//   & #svg-delete-button-line-1 { stroke: white; }
+//   & #svg-delete-button-line-2 { stroke: white; }
+// }

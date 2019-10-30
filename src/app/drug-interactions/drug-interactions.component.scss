@@ -55,7 +55,6 @@
   border: none;
   color: white;
   font-size: calc(1rem + 0.1vw);
-  transition: 0.15s ease-in;
   &:focus {
     box-shadow: none;
     outline: none;
@@ -79,6 +78,13 @@
   }
 }
 
+%transition-hover {
+  transition: 0.15s ease-in;
+  &:hover {
+    transition: 0.2s ease-out;
+  }
+}
+
 $delete-button-size: calc(1rem + 0.5vw);
 
 .step-1 {
@@ -91,6 +97,7 @@ $delete-button-size: calc(1rem + 0.5vw);
     margin: 0 auto calc(1rem + 1vw) auto;
     padding: 0 calc(0.5rem + 0.5vw);
     @extend %btn;
+    @extend %transition-hover;
     &:hover {
       background-color: $secondary-color;
     }
@@ -105,11 +112,15 @@ $delete-button-size: calc(1rem + 0.5vw);
       margin-bottom: calc(1rem + 0.25vw);
     }
     & .delete-button-svg {
+      fill: $primary-color;
       height: $delete-button-size;
       margin-left: calc(0.25rem + 0.25vw);
+      stroke: white;
       width: $delete-button-size;
+      @extend %transition-hover;
       &:hover {
         cursor: pointer;
+        fill: red;
       }
     }
     & input {
@@ -138,6 +149,7 @@ $delete-button-size: calc(1rem + 0.5vw);
     margin: 0 auto;
     padding: 0 calc(0.5rem + 0.5vw);
     @extend %btn;
+    @extend %transition-hover;
     &:hover {
       background-color: $secondary-color;
     }
