@@ -17,12 +17,12 @@ export class DrugInteractionsComponent implements OnInit, OnDestroy {
 
   // ---------- Class Variable Declarations ------------------------------------
 
-  @Output() pageTitle = new EventEmitter<string>();
   diDisclaimer: string;
   diError: string;
   diInteractions: Set<string> = new Set();
   diMedications: {} = {};
   diUserInput: Set<string> = new Set();
+  pageHeader: string = 'Drug Interactions';
   rxCUIResponses: string[] = [];
   private _subscriptions = new Subscription(); 
   
@@ -65,7 +65,6 @@ export class DrugInteractionsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.pageTitle.emit('Drug Interactions');
     this.meds.controls.forEach((fc: FormControl) => {
       this.onFormControlInput(fc);
     })

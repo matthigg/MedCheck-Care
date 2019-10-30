@@ -10,6 +10,7 @@ export class AppComponent {
   constructor(private titleService: Title) { }
 
   setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle);
+    const newTitleModified: string = newTitle + ' - MedCheck.care | Drug Interactions Tool' 
+    this.titleService.setTitle(newTitleModified);
   }
 }

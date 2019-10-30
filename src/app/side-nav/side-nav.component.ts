@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -28,7 +28,8 @@ export class SideNavComponent {
 
   // This variable holds the pageHeader property belonging to whichever component 
   // the HttpClientModule loads in place of the <router-outlet> element.
-  pageHeader: string
+  pageHeader: string;
+  @Output() emitTitle = new EventEmitter<any>();
 
   constructor(private breakpointObserver: BreakpointObserver) { }
 
@@ -48,5 +49,6 @@ export class SideNavComponent {
   // occurs whenever a component is rendered via the AppRoutingModule.
   componentAdded(component): void {
     this.pageHeader = component.pageHeader
+    this.emitTitle.emit(this.pageHeader)
   }
 }
