@@ -6,11 +6,12 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements OnInit {
-  @Output() pageTitle = new EventEmitter<string>();
+  // @Output() pageTitle = new EventEmitter<string>();
+  pageHeader: string = 'About';
 
   constructor() { }
 
   ngOnInit() {
-    this.pageTitle.emit('About');
+    // this.pageTitle.emit('About');
   }
 }
