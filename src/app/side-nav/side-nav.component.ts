@@ -24,22 +24,17 @@ export class SideNavComponent {
       shareReplay()
     );
   handsetScreenActive: boolean
-  handsetSubscription: Subscription
+  handsetSubscription: Subscription = this.isHandset$.subscribe(
+    value => this.handsetScreenActive = value
+  )
 
-  // This variable holds the pageHeader property belonging to whichever component 
-  // the HttpClientModule loads in place of the <router-outlet> element.
+  // Store each view's page header & initialize a title emitter.
   pageHeader: string;
   @Output() emitTitle = new EventEmitter<any>();
 
   constructor(private breakpointObserver: BreakpointObserver) { }
 
-  ngOnInit() {
-
-    // Make the screen width oberservable available to the template as a property
-    this.handsetSubscription = this.isHandset$.subscribe(
-      value => this.handsetScreenActive = value
-    )
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.handsetSubscription.unsubscribe()
