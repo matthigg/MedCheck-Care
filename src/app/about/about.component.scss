@@ -1,10 +1,6 @@
 @import '../../_colors';
 
 .copy-intro {
-  background: #efefff;
-  border: 2px solid $tertiary-color;
-  border-radius: calc(0.5rem + 0.5vw);
-  font-size: calc(1rem + 0.125vw);
   grid-area: intro;
   padding: calc(1rem + 1vw);
   & h3 {
