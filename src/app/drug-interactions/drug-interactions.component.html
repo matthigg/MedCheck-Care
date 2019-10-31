@@ -34,10 +34,6 @@
       over-the-counter (OTC) medications, and/or herbal supplements that you want 
       to check for interactions.
     </mat-card-content>
-    <mat-card-content>
-      Click the "+Add Another Medication" button if you want to check additional 
-      medications, otherwise proceed to Step 2 after you have finished.
-    </mat-card-content>
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()" role="form">
       <div formArrayName="meds">
 

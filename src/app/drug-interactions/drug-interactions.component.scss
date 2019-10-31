@@ -78,24 +78,6 @@ $delete-button-size: calc(1rem + 0.5vw);
       fill: red;
     }
   }
-  & label {
-    align-items: center;
-    display: flex;
-    width: calc(100% - calc(2rem + 2vw));
-    & input {
-      border: 2px solid $tertiary-color;
-      border-radius: calc(0.25rem + 0.25vw);
-      height: calc(2rem + 1vw);
-      font-size: calc(1rem + 0.25vw);
-      padding: 0 calc(0.25rem + 0.25vw);
-      width: calc(100% - calc(2rem + 2vw));
-      &:focus {
-        border: 2px solid $secondary-color;
-        box-shadow: none;
-        outline: none;
-      }
-    }
-  }
   & mat-card-content {
     font-size: calc(1rem + 0.125vw);
   }
@@ -110,6 +92,14 @@ $delete-button-size: calc(1rem + 0.5vw);
     & h4 {
       flex: 1 1 auto;
     }
+  }
+
+  // Do not nest this within the "mat-toolbar" selector because mat-toolbar wraps
+  // dynamically-*ngFor-generated <mat-toolbar-row> elements and those elements
+  // can be created before the following & mat-form-field {} CSS rule has a 
+  // chance to take effect.
+  & mat-form-field {
+    width: 100%;
   }
 }
 
