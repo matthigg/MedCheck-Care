@@ -9,7 +9,9 @@ import { NgModule } from '@angular/core';
 import { LayoutModule } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -39,8 +41,10 @@ import { SvgSpriteSheetComponent } from './svg-sprite-sheet/svg-sprite-sheet.com
     HttpClientModule,
     LayoutModule,
     MatButtonModule,
-    MatCardModule,
+    MatCardModule, 
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatSidenavModule,
     MatToolbarModule,

@@ -224,7 +224,13 @@
 
 - Troubleshooting
 
-  > Installation - Error: EACCES: permission denied, rename... (10/19/2019): You can install "Angular CLI's install schematic" to set up an Angular Material project using the `ng add` command -- this installs both Angular Material and the Component Dev Kit (CDK) in ~/node_modules/material and ~/node_modules/cdk, respectively. However, if you don't install the CDK first then you'll run into a permissions error, as part of the installation process involves renaming/doing something with a file located in ~/node_modules/cdk. So to avoid this, just install the CDK first.
+  > Installation - Error: EACCES: permission denied, rename... 
+    - (10/19/2019): You can install "Angular CLI's install schematic" to set up an Angular Material project using the `ng add` command -- this installs both Angular Material and the Component Dev Kit (CDK) in ~/node_modules/material and ~/node_modules/cdk, respectively. However, if you don't install the CDK first then you'll run into a permissions error, as part of the installation process involves renaming/doing something with a file located in ~/node_modules/cdk. So to avoid this, just install the CDK first.
+
+  > Form Fields - Error: mat-form-field must contain a MatFormFieldControl. 
+    - (10/31/2019): Using the Angular Material Form Field Module requires importing both MatFormFieldModule -and- MatInputModule, the later of which is not specified in the documentation as far as I can see:
+
+      1. https://material.angular.io/components/form-field/api
 
   1. https://material.angular.io/guide/getting-started
   2. https://material.angular.io/guide/schematics
