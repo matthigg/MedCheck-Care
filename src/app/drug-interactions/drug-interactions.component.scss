@@ -86,6 +86,7 @@
     margin: calc(0.5rem + 0.5vw) auto 0 auto;
   }
   & .medications-toolbar-header {
+    margin-bottom: calc(0.5rem + 0.5vw);
     & button { flex: 0 1 auto; }
     & h4 { flex: 1 1 auto; }
   }
