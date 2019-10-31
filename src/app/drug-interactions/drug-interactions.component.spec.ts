@@ -6,6 +6,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material';
+import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { DrugInteractionsComponent } from './drug-interactions.component';
@@ -26,6 +27,7 @@ describe('DrugInteractionsComponent', () => {
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
+        MatListModule,
         MatToolbarModule,
         ReactiveFormsModule,
       ]
