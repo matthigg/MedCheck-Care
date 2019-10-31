@@ -1,0 +1,33 @@
+@import '../../_colors';
+
+.copy-intro {
+  background: #efefff;
+  border: 2px solid $tertiary-color;
+  border-radius: calc(0.5rem + 0.5vw);
+  font-size: calc(1rem + 0.125vw);
+  grid-area: intro;
+  padding: calc(1rem + 1vw);
+  & h3 {
+    color: $primary-color;
+    margin-top: 0;
+    text-align: center;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-auto-rows: minmax(15vh, auto);
+  grid-gap: calc(1rem + 1vw);
+  grid-template-areas:
+    "intro";
+  grid-template-columns: 1fr;
+  padding: calc(1rem + 1vw);
+}
+
+@media (min-width: 992px) {
+  .grid-container {
+    grid-template-areas:
+      ". intro intro intro intro intro intro .";
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
