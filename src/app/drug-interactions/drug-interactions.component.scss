@@ -56,10 +56,19 @@
   }
 }
 
+%mat-toolbar-header {
+  & mat-toolbar {
+    & h4 {
+      font-size: calc(1rem + 0.25vw);
+    }
+  }
+}
+
 .drug-interactions-search-tool {
   grid-area: dsrch;
   font-size: calc(1rem + 0.125vw);
   @extend %mat-card-title-and-content;
+  @extend %mat-toolbar-header;
   & .delete-button-svg {
     fill: $primary-color;
     height: calc(1rem + 0.5vw);
@@ -76,7 +85,7 @@
     display: block;
     margin: calc(0.5rem + 0.5vw) auto 0 auto;
   }
-  & mat-toolbar {
+  & .medications-toolbar-header {
     & button { flex: 0 1 auto; }
     & h4 { flex: 1 1 auto; }
   }
@@ -93,9 +102,14 @@
 .drug-interactions-search-results {
   grid-area: drslt;
   @extend %mat-card-title-and-content;
+  @extend %mat-toolbar-header;
   & .drug-interactions-user-input {
     & span.last {
       display: none;
     }
+  }
+  & .drug-interactions-results-received {
+    padding: calc(1rem + 0.25vh) 0;
+    height: auto;
   }
 }

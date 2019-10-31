@@ -35,8 +35,8 @@
       <div formArrayName="meds">
 
         <!-- Medications Toolbar Header -->
-        <mat-toolbar>
-          <h4 class="">Medications</h4>
+        <mat-toolbar class="medications-toolbar-header">
+          <h4>Medications</h4>
           <button class="add-medication-button" type="button" mat-raised-button color="primary" (click)="medFormAddFormControl()" aria-label="Add another medication input field">+ Add</button>
         </mat-toolbar>
 
@@ -69,7 +69,7 @@
       <mat-card-title>Search Results</mat-card-title>
     </mat-card-header>
 
-    <!-- Results - User Input -->
+    <!-- Results Status: User Input -->
     <div class="drug-interactions-user-input" *ngIf="step3ResultsStatus === 'pending' || step3ResultsStatus === 'noResults' || step3ResultsStatus === 'received'">
       Search terms:
       <span *ngFor="let userinput of diUserInput; last as isLast">
@@ -78,17 +78,17 @@
       </span> 
     </div>
 
-    <!-- Results - Idle -->
+    <!-- Results Status: Idle -->
     <div *ngIf="step3ResultsStatus === 'idle'"></div>
 
-    <!-- Results - Pending -->
+    <!-- Results Status: Pending -->
     <div *ngIf="step3ResultsStatus === 'pending'">
       <p>
         Results are pending...
       </p>
     </div>
 
-    <!-- Results - No Results -->
+    <!-- Results Status: No Results -->
     <div *ngIf="step3ResultsStatus === 'noResults'">
       <p>
         Either no drug interactions were found, or the connection timed out. 
@@ -97,40 +97,38 @@
       </p>
     </div>
 
-    <!-- Results - Received -->
+    <!-- Results Status: Received -->
     <div *ngIf="step3ResultsStatus === 'received'">
       <p>Coming Soon: view, print, or save your results to your device. Results are saved in .pdf format.</p>
-      <mat-toolbar>
-        <h4>Medications (generic)</h4>
-      </mat-toolbar>
+      
+      <!-- Results Received - Medications (generic) -->
+      <mat-toolbar><h4>Medications (generic)</h4></mat-toolbar>
       <mat-list role="list">
         <mat-list-item *ngFor="let med of diMedications | keyvalue">
           {{ med.key }} <span *ngIf="med.value.length !== 0">({{ med.value }})</span>
         </mat-list-item>
       </mat-list>
-      <mat-toolbar>
-        <h4>Drug Interactions</h4>
-      </mat-toolbar>
+      
+      <!-- Results Received - Drug Interactions -->
+      <mat-toolbar><h4>Drug Interactions</h4></mat-toolbar>
       <mat-list role="list">
-        <mat-list-item *ngFor="let interaction of diInteractions">
+        <mat-list-item class="drug-interactions-results-received" *ngFor="let interaction of diInteractions">
           {{ interaction }}
         </mat-list-item>
       </mat-list>
-      <div class="copy-nlm-disclaimer">
-        <mat-toolbar>
-          <h4>Disclaimer</h4>
-        </mat-toolbar>
-        <p>
-          This product uses publicly available data from the U.S. National 
-          Library of Medicine (NLM), National Institutes of Health, Department of 
-          Health and Human Services; NLM is not responsible for the product and does 
-          not endorse or recommend this or any other product.
-        </p>
-        <p>{{ diDisclaimer}}</p>
-      </div>
+
+      <!-- Results Received - Disclaimer -->
+      <mat-toolbar><h4>Disclaimer</h4></mat-toolbar>
+      <p>
+        This product uses publicly available data from the U.S. National 
+        Library of Medicine (NLM), National Institutes of Health, Department of 
+        Health and Human Services; NLM is not responsible for the product and does 
+        not endorse or recommend this or any other product.
+      </p>
+      <p>{{ diDisclaimer}}</p>
     </div>
 
-    <!-- Results - Error -->
+    <!-- Results Status: Error -->
     <div *ngIf="step3ResultsStatus === 'error'">
       <p>
         There was an error with the request: {{ diError }}
