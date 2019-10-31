@@ -93,4 +93,9 @@
 .drug-interactions-search-results {
   grid-area: drslt;
   @extend %mat-card-title-and-content;
+  & .drug-interactions-user-input {
+    & span.last {
+      display: none;
+    }
+  }
 }

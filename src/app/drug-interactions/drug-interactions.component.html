@@ -65,13 +65,13 @@
 
   <!-- Drug Interaction Search Results -->
   <mat-card class="drug-interactions-search-results">
-      <mat-card-header>
-        <mat-card-title>Search Results</mat-card-title>
-      </mat-card-header>
+    <mat-card-header>
+      <mat-card-title>Search Results</mat-card-title>
+    </mat-card-header>
 
     <!-- Results - User Input -->
-    <div *ngIf="step3ResultsStatus === 'pending' || step3ResultsStatus === 'noResults' || step3ResultsStatus === 'received'">
-      Drug interaction search results for:
+    <div class="drug-interactions-user-input" *ngIf="step3ResultsStatus === 'pending' || step3ResultsStatus === 'noResults' || step3ResultsStatus === 'received'">
+      Search terms:
       <span *ngFor="let userinput of diUserInput; last as isLast">
         <span>"{{ userinput }}"</span>
         <span [ngClass]="{ 'last': isLast }">, </span>
@@ -100,20 +100,26 @@
     <!-- Results - Received -->
     <div *ngIf="step3ResultsStatus === 'received'">
       <p>Coming Soon: view, print, or save your results to your device. Results are saved in .pdf format.</p>
-      <h4>Medications (Generic):</h4>
-      <ul>
-        <li *ngFor="let med of diMedications | keyvalue">
+      <mat-toolbar>
+        <h4>Medications (generic)</h4>
+      </mat-toolbar>
+      <mat-list role="list">
+        <mat-list-item *ngFor="let med of diMedications | keyvalue">
           {{ med.key }} <span *ngIf="med.value.length !== 0">({{ med.value }})</span>
-        </li>
-      </ul>
-      <h4>Drug Interactions:</h4>
-      <ul>
-        <li *ngFor="let interaction of diInteractions">
+        </mat-list-item>
+      </mat-list>
+      <mat-toolbar>
+        <h4>Drug Interactions</h4>
+      </mat-toolbar>
+      <mat-list role="list">
+        <mat-list-item *ngFor="let interaction of diInteractions">
           {{ interaction }}
-        </li>
-      </ul>
+        </mat-list-item>
+      </mat-list>
       <div class="copy-nlm-disclaimer">
-        <h4>Disclaimer:</h4>
+        <mat-toolbar>
+          <h4>Disclaimer</h4>
+        </mat-toolbar>
         <p>
           This product uses publicly available data from the U.S. National 
           Library of Medicine (NLM), National Institutes of Health, Department of 
