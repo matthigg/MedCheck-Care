@@ -1,6 +1,6 @@
 @import '../../colors';
 
-// ---------- COPY ------------------------------------------------------------
+// ---------- Copy ------------------------------------------------------------
 
 %copy {
   color: white;
@@ -19,7 +19,7 @@
   @extend %copy;
 }
 
-// ---------- MAIN GRID -------------------------------------------------------
+// ---------- Main Grid -------------------------------------------------------
 
 .grid-container {
   display: grid;
@@ -28,9 +28,8 @@
   grid-template-areas:
     "intro"
     "discl"
-    "step1"
-    "step2"
-    "step3";
+    "dsrch"
+    "drslt";
   grid-template-columns: 1fr;
   padding: calc(1rem + 1vw);
 }
@@ -39,45 +38,15 @@
   .grid-container {
     grid-template-areas:
     ".     intro intro intro discl discl discl .    "
-    ".     step1 step1 step1 step1 step1 step1 .    "
-    ".     step2 step2 step2 step2 step2 step2 .    "
-    ".     step3 step3 step3 step3 step3 step3 .    ";
+    ".     dsrch dsrch dsrch dsrch dsrch dsrch .    "
+    ".     drslt drslt drslt drslt drslt drslt .    ";
     grid-template-columns: repeat(8, 1fr);
   }
 }
 
-// ---------- STEPS 1, 2, & 3 --------------------------------------------------
+// ---------- Drug Interactions Search Tool & Results --------------------------
 
-%steps {
-  font-size: calc(1rem + 0.125vw);
-  & h3 {
-    color: $primary-color;
-  }
-}
-
-%transition-hover {
-  transition: 0.15s ease-in;
-  &:hover {
-    transition: 0.2s ease-out;
-  }
-}
-
-$delete-button-size: calc(1rem + 0.5vw);
-
-.step-1 {
-  grid-area: step1;
-  @extend %steps;
-  & .delete-button-svg {
-    fill: $primary-color;
-    height: $delete-button-size;
-    stroke: white;
-    width: $delete-button-size;
-    @extend %transition-hover;
-    &:hover {
-      cursor: pointer;
-      fill: red;
-    }
-  }
+%mat-card-title-and-content {
   & mat-card-content {
     font-size: calc(1rem + 0.125vw);
   }
@@ -85,13 +54,31 @@ $delete-button-size: calc(1rem + 0.5vw);
     color: $primary-color;
     font-size: calc(1rem + 0.5vw);
   }
+}
+
+.drug-interactions-search-tool {
+  grid-area: dsrch;
+  font-size: calc(1rem + 0.125vw);
+  @extend %mat-card-title-and-content;
+  & .delete-button-svg {
+    fill: $primary-color;
+    height: calc(1rem + 0.5vw);
+    stroke: white;
+    width: calc(1rem + 0.5vw);
+    transition: 0.1s ease-in;
+    &:hover {
+      cursor: pointer;
+      fill: red;
+      transition: 0.1s ease-out;
+    }
+  }
+  & .drug-interactions-search-button {
+    display: block;
+    margin: auto;
+  }
   & mat-toolbar {
-    & button {
-      flex: 0 1 auto;
-    }
-    & h4 {
-      flex: 1 1 auto;
-    }
+    & button { flex: 0 1 auto; }
+    & h4 { flex: 1 1 auto; }
   }
 
   // Do not nest this within the "mat-toolbar" selector because mat-toolbar wraps
@@ -103,32 +90,7 @@ $delete-button-size: calc(1rem + 0.5vw);
   }
 }
 
-.step-2 {
-  grid-area: step2;
-  @extend %steps;
-  & .btn-view-results {
-    border-radius: calc(0.25rem + 0.25vw);
-    display: block;
-    height: calc(1.5rem + 1vw);
-    margin: 0 auto;
-    padding: 0 calc(0.5rem + 0.5vw);
-    @extend %transition-hover;
-    &:hover {
-      background-color: $secondary-color;
-    }
-    &:focus {
-      border: 4px solid $secondary-color;
-    }
-  }
-}
-
-.step-3 {
-  grid-area: step3;
-  @extend %steps;
-  & h4 {
-    color: $primary-color;
-  }
-  & span.last {
-    display: none;
-  }
+.drug-interactions-search-results {
+  grid-area: drslt;
+  @extend %mat-card-title-and-content;
 }

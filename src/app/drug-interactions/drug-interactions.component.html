@@ -3,12 +3,9 @@
   <!-- Introducton -->
   <mat-card class="copy-intro" role="region">
     <p>
-      Have a question about drug interactions? Use the screening tool below to 
+      Have a question about drug interactions? Use the search tool below to 
       identify possible interactions between prescription medications, 
       over-the-counter (OTC) medications, and herbal supplements. 
-    </p>
-    <p>
-      Follow Steps 1, 2, and 3 below to get started.
     </p>
   </mat-card>
 
@@ -24,10 +21,10 @@
     </p>
   </mat-card>
 
-  <!-- Step 1 -->
-  <mat-card class="step-1" role="region">
+  <!-- Drug Interaction Search Tool -->
+  <mat-card class="drug-interactions-search-tool" role="region">
     <mat-card-header>
-      <mat-card-title>Drug Interaction Search Tool</mat-card-title>
+      <mat-card-title>Search Tool</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       Use the fields below to type in the names of prescription medications, 
@@ -37,48 +34,39 @@
     <form id="medForm" [formGroup]="medGroup" (ngSubmit)="onSubmit()" role="form">
       <div formArrayName="meds">
 
+        <!-- Medications Toolbar Header -->
         <mat-toolbar>
           <h4 class="">Medications</h4>
           <button class="add-medication-button" type="button" mat-raised-button color="primary" (click)="medFormAddFormControl()" aria-label="Add another medication input field">+ Add</button>
         </mat-toolbar>
 
+        <!-- Medications Form Controls/Input Fields -->
         <mat-toolbar-row *ngFor="let fc of meds.controls; let i = index; last as isLast" [ngClass]="{ 'last': isLast }">
-        
           <mat-form-field>
             <input matNativeControl type="text" [attr.list]="'atSuggestion' + i" autocomplete="off" [formControlName]="i" aria-label="Type in a medication">
           </mat-form-field>
-
           <datalist [id]="'atSuggestion' + i">
             <span *ngFor="let atSuggestion of fc.atSuggestions">
               <option value="{{ atSuggestion }}">
             </span>
           </datalist>
-
           <svg class="delete-button-svg" (click)="medFormDeleteFormControl(i)" aria-label="Delete this medication input field">
             <use xlink:href="#svg-delete-button" />
           </svg>
         </mat-toolbar-row>
 
       </div>
+      <button class="drug-interactions-search-button" type="submit" mat-raised-button color="primary" form="medForm">Search</button>
     </form>
   </mat-card>
 
-  <!-- Step 2 -->
-  <div class="step-2">
-    <h3>Step 2</h3>
-    <p>
-      Click the button below after you have entered all of the medications that 
-      you want to check. The results will be displayed under Step 3.
-    </p>
-    <button class="btn-view-results" type="submit" form="medForm" [disabled]="!medGroup.valid">Check for Interactions</button>
-    <p>
-      Note: brand name drugs are converted to their generic equivalents.
-    </p>
-  </div>
+  <!-- Drug Interaction Search Results -->
+  <mat-card class="drug-interactions-search-results">
+      <mat-card-header>
+        <mat-card-title>Search Results</mat-card-title>
+      </mat-card-header>
 
-  <!-- Step 3 -->
-  <div class="step-3">
-    <h3>Step 3</h3>
+    <!-- Results - User Input -->
     <div *ngIf="step3ResultsStatus === 'pending' || step3ResultsStatus === 'noResults' || step3ResultsStatus === 'received'">
       Drug interaction search results for:
       <span *ngFor="let userinput of diUserInput; last as isLast">
@@ -86,18 +74,18 @@
         <span [ngClass]="{ 'last': isLast }">, </span>
       </span> 
     </div>
-    <div *ngIf="step3ResultsStatus === 'idle'">
-      <p>
-        If any drug interactions are found for the medications entered in Step 1 
-        then they will be displayed here after clicking the "Check for 
-        Interactions" button in Step 2.
-      </p>
-    </div>
+
+    <!-- Results - Idle -->
+    <div *ngIf="step3ResultsStatus === 'idle'"></div>
+
+    <!-- Results - Pending -->
     <div *ngIf="step3ResultsStatus === 'pending'">
       <p>
         Results are pending...
       </p>
     </div>
+
+    <!-- Results - No Results -->
     <div *ngIf="step3ResultsStatus === 'noResults'">
       <p>
         Either no drug interactions were found, or the connection timed out. 
@@ -105,6 +93,8 @@
         healthcare provider for further questions.
       </p>
     </div>
+
+    <!-- Results - Received -->
     <div *ngIf="step3ResultsStatus === 'received'">
       <p>Coming Soon: view, print, or save your results to your device. Results are saved in .pdf format.</p>
       <h4>Medications (Generic):</h4>
@@ -130,10 +120,13 @@
         <p>{{ diDisclaimer}}</p>
       </div>
     </div>
+
+    <!-- Results - Error -->
     <div *ngIf="step3ResultsStatus === 'error'">
       <p>
         There was an error with the request: {{ diError }}
       </p>
     </div>
-  </div>
+
+  </mat-card>
 </div>
