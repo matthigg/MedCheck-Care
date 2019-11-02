@@ -194,6 +194,42 @@
 
 - Another option is "ngx-bootstrap", which is basically the same thing as "ng-bootstrap" except that it features animations for some of its components and also supports Bootstrap v3 and v4, as opposed to just v4.
 
+- If you want to just use the core bootstrap files -without- popper.js or jQuery, you can install bootstrap via npm. This will give you core functionality like the usual <container><row><col-md-6> Bootstrap Grid attributes, but unfortunately you won't have the cool animation effect when toggling the Bootstrap Navbar. To install bootstrap using npm from the command line:
+
+  $ npm install bootstrap
+  $ npm install --save bootstrap (puts 'bootstrap' in package.json dependencies)
+
+  ... Note: (11/2/2019) - Omitting the --save flag inserts 'bootstrap' into the package.json dependencies.
+
+- Additionally, you may want to make sure that bootstrap is included in ~/package.json: and ~/angular.json:
+
+-- ~/package.json
+
+  ...
+    "dependencies": {
+      ...
+       "bootstrap": "^4.3.1",
+      ...
+    }
+  ...
+
+-- ~/angular.json
+
+  ...
+    "build": {
+      ...
+      "options": {
+        ...
+        "styles": [
+          "node_modules/bootstrap/dist/css/bootstrap.min.css",
+          "src/styles.scss"
+        ],
+      }
+    }
+  ...
+
+  ... Note: make sure to include the bootstrap.min.css file under the "build" property, there is also a similar "test" property that is used by Karma/Jasmine for testing.
+
   1. https://ng-bootstrap.github.io/#/getting-started
   2. https://www.techiediaries.com/angular-bootstrap-ui/
   3. https://stevenschwenke.de/AngularAndBootstrapUseNg-bootstrap
