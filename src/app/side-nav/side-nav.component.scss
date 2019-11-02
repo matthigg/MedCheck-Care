@@ -15,7 +15,7 @@ $logo-size: calc(1rem + 0.75vw);
     }
     & .mat-toolbar {          // Sidenav/Drawer Component Header  
       background: inherit;
-      justify-content: center;
+      // justify-content: center;
       & .logo-svg {
         height: $logo-size;
         width: $logo-size;
@@ -34,7 +34,7 @@ $logo-size: calc(1rem + 0.75vw);
       top: 0;
       z-index: 1;
       & h1 {
-        margin: 0 auto;
+        margin-left: calc(1rem + 1vw);
       }
     }
   }
